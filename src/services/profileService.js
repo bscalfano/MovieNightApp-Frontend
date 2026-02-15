@@ -11,12 +11,13 @@ const profileService = {
     return response.data;
   },
 
-  updateProfile: async (email, firstName, lastName, profilePictureUrl) => {
+  updateProfile: async (email, firstName, lastName, profilePictureUrl, letterboxdUsername) => {
     const response = await axios.put(API_URL, {
       email,
       firstName,
       lastName,
-      profilePictureUrl
+      profilePictureUrl,
+      letterboxdUsername
     }, {
       headers: authService.getAuthHeader()
     });

@@ -20,7 +20,8 @@ function ProfilePage() {
     email: '',
     firstName: '',
     lastName: '',
-    profilePictureUrl: ''
+    profilePictureUrl: '',
+    letterboxdUsername: ''
   });
 
   const [passwordForm, setPasswordForm] = useState({
@@ -41,7 +42,8 @@ function ProfilePage() {
         email: data.email,
         firstName: data.firstName || '',
         lastName: data.lastName || '',
-        profilePictureUrl: data.profilePictureUrl || ''
+        profilePictureUrl: data.profilePictureUrl || '',
+        letterboxdUsername: data.letterboxdUsername || ''
       });
       setLoading(false);
     } catch (error) {
@@ -74,11 +76,11 @@ function ProfilePage() {
         profileForm.email,
         profileForm.firstName,
         profileForm.lastName,
-        profileForm.profilePictureUrl
+        profileForm.profilePictureUrl,
+        profileForm.letterboxdUsername
       );
       toast.success('Profile updated successfully!');
       
-      // Update stored user info
       const currentUser = authService.getCurrentUser();
       if (currentUser) {
         currentUser.email = profileForm.email;
@@ -155,7 +157,6 @@ function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <Link to="/calendar" className="text-indigo-600 hover:text-indigo-800 mb-2 inline-block">
@@ -166,7 +167,6 @@ function ProfilePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Stats */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex flex-col items-center mb-6">
               <ProfilePicture
@@ -182,33 +182,19 @@ function ProfilePage() {
             </div>
             <h4 className="text-md font-semibold text-gray-700 mb-4 border-t pt-4">Statistics</h4>
             <div className="space-y-3">
-              <Link
-                to="/"
-                className="block p-3 rounded-lg hover:bg-indigo-50 transition cursor-pointer"
-              >
+              <Link to="/calendar" className="block p-3 rounded-lg hover:bg-indigo-50 transition cursor-pointer">
                 <p className="text-sm text-gray-600">Total Movie Nights</p>
                 <p className="text-3xl font-bold text-indigo-600">{profile.totalMovieNights}</p>
               </Link>
-              <Link
-                to="/"
-                className="block p-3 rounded-lg hover:bg-green-50 transition cursor-pointer"
-              >
+              <Link to="/calendar" className="block p-3 rounded-lg hover:bg-green-50 transition cursor-pointer">
                 <p className="text-sm text-gray-600">Upcoming</p>
                 <p className="text-3xl font-bold text-green-600">{profile.upcomingMovieNights}</p>
               </Link>
-              <Link
-                to="/friends"
-                state={{ defaultTab: 'friends', from: '/profile' }}
-                className="block p-3 rounded-lg hover:bg-blue-50 transition cursor-pointer"
-              >
+              <Link to="/friends" state={{ defaultTab: 'friends', from: '/profile' }} className="block p-3 rounded-lg hover:bg-blue-50 transition cursor-pointer">
                 <p className="text-sm text-gray-600">Friends</p>
                 <p className="text-3xl font-bold text-blue-600">{profile.friendsCount}</p>
               </Link>
-              <Link
-                to="/friends"
-                state={{ defaultTab: 'requests', from: '/profile' }}
-                className="block p-3 rounded-lg hover:bg-orange-50 transition cursor-pointer"
-              >
+              <Link to="/friends" state={{ defaultTab: 'requests', from: '/profile' }} className="block p-3 rounded-lg hover:bg-orange-50 transition cursor-pointer">
                 <p className="text-sm text-gray-600">Pending Requests</p>
                 <p className="text-3xl font-bold text-orange-600">{profile.pendingRequestsCount}</p>
               </Link>
@@ -223,37 +209,27 @@ function ProfilePage() {
               </div>
             </div>
             <div className="mt-4 pt-4 border-t">
-              <Link
-                to="/friends"
-                state={{ from: '/profile' }}
-                className="text-indigo-600 hover:text-indigo-800 font-semibold"
-              >
+              <Link to="/friends" state={{ from: '/profile' }} className="text-indigo-600 hover:text-indigo-800 font-semibold">
                 Find Friends →
               </Link>
             </div>
           </div>
 
-          {/* Profile Info / Edit */}
           <div className="md:col-span-2 bg-white rounded-lg shadow-md p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-gray-900">Profile Information</h3>
               {!editMode && !passwordMode && (
-                <button
-                  onClick={() => setEditMode(true)}
-                  className="text-indigo-600 hover:text-indigo-800 font-semibold"
-                >
+                <button onClick={() => setEditMode(true)} className="text-indigo-600 hover:text-indigo-800 font-semibold">
                   Edit Profile
                 </button>
               )}
             </div>
 
-            {editMode ? (
+            {editMode && (
               <form onSubmit={handleProfileSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      First Name
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                     <input
                       type="text"
                       name="firstName"
@@ -263,9 +239,7 @@ function ProfilePage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Last Name
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
                     <input
                       type="text"
                       name="lastName"
@@ -276,9 +250,7 @@ function ProfilePage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                   <input
                     type="email"
                     name="email"
@@ -289,9 +261,7 @@ function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Profile Picture URL
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Profile Picture URL</label>
                   <input
                     type="url"
                     name="profilePictureUrl"
@@ -302,20 +272,30 @@ function ProfilePage() {
                   />
                   {profileForm.profilePictureUrl && (
                     <div className="mt-2">
-                      <ProfilePicture
-                        src={profileForm.profilePictureUrl}
-                        alt="Preview"
-                        size="lg"
-                      />
+                      <ProfilePicture src={profileForm.profilePictureUrl} alt="Preview" size="lg" />
                     </div>
                   )}
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Letterboxd Username</label>
+                  <input
+                    type="text"
+                    name="letterboxdUsername"
+                    value={profileForm.letterboxdUsername}
+                    onChange={handleProfileChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="username"
+                  />
+                  {profileForm.letterboxdUsername && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      Profile: <a href={`https://letterboxd.com/${profileForm.letterboxdUsername}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                        letterboxd.com/{profileForm.letterboxdUsername}
+                      </a>
+                    </p>
+                  )}
+                </div>
                 <div className="flex gap-3">
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400"
-                  >
+                  <button type="submit" disabled={saving} className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400">
                     {saving ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button
@@ -326,7 +306,8 @@ function ProfilePage() {
                         email: profile.email,
                         firstName: profile.firstName || '',
                         lastName: profile.lastName || '',
-                        profilePictureUrl: profile.profilePictureUrl || ''
+                        profilePictureUrl: profile.profilePictureUrl || '',
+                        letterboxdUsername: profile.letterboxdUsername || ''
                       });
                     }}
                     disabled={saving}
@@ -336,12 +317,12 @@ function ProfilePage() {
                   </button>
                 </div>
               </form>
-            ) : passwordMode ? (
+            )}
+
+            {passwordMode && (
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Current Password
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
                   <input
                     type="password"
                     name="currentPassword"
@@ -352,9 +333,7 @@ function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    New Password
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
                   <input
                     type="password"
                     name="newPassword"
@@ -365,9 +344,7 @@ function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm New Password
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
                   <input
                     type="password"
                     name="confirmPassword"
@@ -378,11 +355,7 @@ function ProfilePage() {
                   />
                 </div>
                 <div className="flex gap-3">
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400"
-                  >
+                  <button type="submit" disabled={saving} className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400">
                     {saving ? 'Changing...' : 'Change Password'}
                   </button>
                   <button
@@ -402,7 +375,9 @@ function ProfilePage() {
                   </button>
                 </div>
               </form>
-            ) : (
+            )}
+
+            {!editMode && !passwordMode && (
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-gray-600">Name</p>
@@ -416,11 +391,16 @@ function ProfilePage() {
                   <p className="text-sm text-gray-600">Email</p>
                   <p className="text-lg font-semibold text-gray-900">{profile.email}</p>
                 </div>
+                {profile.letterboxdUsername && (
+                  <div>
+                    <p className="text-sm text-gray-600">Letterboxd</p>
+                    <a href={`https://letterboxd.com/${profile.letterboxdUsername}`} target="_blank" rel="noopener noreferrer" className="text-lg font-semibold text-indigo-600 hover:text-indigo-800 hover:underline">
+                      @{profile.letterboxdUsername}
+                    </a>
+                  </div>
+                )}
                 <div className="pt-4 border-t">
-                  <button
-                    onClick={() => setPasswordMode(true)}
-                    className="text-indigo-600 hover:text-indigo-800 font-semibold"
-                  >
+                  <button onClick={() => setPasswordMode(true)} className="text-indigo-600 hover:text-indigo-800 font-semibold">
                     Change Password
                   </button>
                 </div>
@@ -429,22 +409,17 @@ function ProfilePage() {
           </div>
         </div>
 
-        {/* Danger Zone */}
         <div className="mt-8 bg-white rounded-lg shadow-md p-6 border-2 border-red-200">
           <h3 className="text-lg font-semibold text-red-600 mb-4">Danger Zone</h3>
           <p className="text-sm text-gray-600 mb-4">
             Once you delete your account, there is no going back. All your movie nights will be permanently deleted.
           </p>
-          <button
-            onClick={() => setDeleteDialog(true)}
-            className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition font-semibold"
-          >
+          <button onClick={() => setDeleteDialog(true)} className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition font-semibold">
             Delete Account
           </button>
         </div>
       </div>
 
-      {/* Delete Confirmation Dialog */}
       <ConfirmDialog
         isOpen={deleteDialog}
         onClose={() => setDeleteDialog(false)}
