@@ -186,39 +186,42 @@ function FindFriendsPage() {
   };
 
   const renderUserList = (users) => {
-    if (users.length === 0) {
-      return (
-        <div className="text-center py-12 text-gray-600">
-          No users found
-        </div>
-      );
-    }
-
+  if (users.length === 0) {
     return (
-      <div className="space-y-3">
-        {users.map(user => (
-          <div key={user.id} className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition">
-            <div className="flex items-center gap-3">
-              <ProfilePicture
-                src={user.profilePictureUrl}
-                alt={user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email}
-                size="md"
-              />
-              <div>
-                <p className="font-semibold text-gray-900">
-                  {user.firstName && user.lastName
-                    ? `${user.firstName} ${user.lastName}`
-                    : user.email}
-                </p>
-                <p className="text-sm text-gray-600">{user.email}</p>
-              </div>
-            </div>
-            {renderActionButton(user)}
-          </div>
-        ))}
+      <div className="text-center py-12 text-gray-600">
+        No users found
       </div>
     );
-  };
+  }
+
+  return (
+    <div className="space-y-3">
+      {users.map(user => (
+        <div key={user.id} className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition">
+          <button
+            onClick={() => navigate(`/calendar/${user.id}`)}
+            className="flex items-center gap-3 flex-1 text-left"
+          >
+            <ProfilePicture
+              src={user.profilePictureUrl}
+              alt={user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email}
+              size="md"
+            />
+            <div>
+              <p className="font-semibold text-gray-900">
+                {user.firstName && user.lastName
+                  ? `${user.firstName} ${user.lastName}`
+                  : user.email}
+              </p>
+              <p className="text-sm text-gray-600">{user.email}</p>
+            </div>
+          </button>
+          {renderActionButton(user)}
+        </div>
+      ))}
+    </div>
+  );
+};
 
   const renderPendingRequests = () => {
     if (pendingRequests.length === 0) {

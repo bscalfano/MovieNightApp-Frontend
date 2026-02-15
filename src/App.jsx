@@ -7,6 +7,7 @@ import FindFriendsPage from './pages/FindFriendsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import PublicCalendarPage from './pages/PublicCalendarPage';
 import './App.css';
 
 function App() {
@@ -45,6 +46,14 @@ function App() {
           element={
             <ProtectedRoute>
               <FindFriendsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/calendar/:userId"
+          element={
+            <ProtectedRoute>
+              <PublicCalendarPage />
             </ProtectedRoute>
           }
         />
