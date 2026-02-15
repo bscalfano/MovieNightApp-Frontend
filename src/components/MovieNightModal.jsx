@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import MovieSearch from './MovieSearch';
 
-function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null }) {
+function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null, initialDate = null }) {
   const [errors, setErrors] = useState({});
   const [showSearch, setShowSearch] = useState(true);
   const [isManualEntry, setIsManualEntry] = useState(false);
@@ -24,39 +24,39 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
   });
 
   useEffect(() => {
-    if (isOpen) {
-      if (initialData) {
-        setFormData({
-          movieTitle: initialData.movieTitle || '',
-          scheduledDate: initialData.scheduledDate 
-            ? format(new Date(initialData.scheduledDate), 'yyyy-MM-dd')
-            : '',
-          startTime: initialData.startTime || '19:00:00',
-          notes: initialData.notes || '',
-          imageUrl: initialData.imageUrl || '',
-          genre: initialData.genre || ''
-        });
-        setIsManualEntry(false);
-        setShowSearch(false);
-        setTmdbSelectedTitle(initialData.movieTitle || null);
-      } else {
-        setFormData({
-          movieTitle: '',
-          scheduledDate: '',
-          startTime: '19:00:00',
-          notes: '',
-          imageUrl: '',
-          genre: ''
-        });
-        setIsManualEntry(false);
-        setShowSearch(true);
-        setTmdbSelectedTitle(null);
-      }
-      setErrors({});
-      setHasBlurred(false);
-      setShowDeleteConfirm(false);
+  if (isOpen) {
+    if (initialData) {
+      setFormData({
+        movieTitle: initialData.movieTitle || '',
+        scheduledDate: initialData.scheduledDate 
+          ? format(new Date(initialData.scheduledDate), 'yyyy-MM-dd')
+          : '',
+        startTime: initialData.startTime || '19:00:00',
+        notes: initialData.notes || '',
+        imageUrl: initialData.imageUrl || '',
+        genre: initialData.genre || ''
+      });
+      setIsManualEntry(false);
+      setShowSearch(false);
+      setTmdbSelectedTitle(initialData.movieTitle || null);
+    } else {
+      setFormData({
+        movieTitle: '',
+        scheduledDate: initialDate ? format(initialDate, 'yyyy-MM-dd') : '',
+        startTime: '19:00:00',
+        notes: '',
+        imageUrl: '',
+        genre: ''
+      });
+      setIsManualEntry(false);
+      setShowSearch(true);
+      setTmdbSelectedTitle(null);
     }
-  }, [isOpen, initialData]);
+    setErrors({});
+    setHasBlurred(false);
+    setShowDeleteConfirm(false);
+  }
+}, [isOpen, initialData, initialDate]);
 
   const handleMovieSelect = (movieData) => {
     setFormData(prev => ({

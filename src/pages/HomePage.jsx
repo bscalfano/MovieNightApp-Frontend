@@ -19,6 +19,7 @@ function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [addModal, setAddModal] = useState(false);
   const [editModal, setEditModal] = useState({ isOpen: false, movieNight: null });
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const user = authService.getCurrentUser();
 
@@ -107,6 +108,11 @@ function HomePage() {
       console.error('Error deleting movie night:', err);
       toast.error('Failed to delete movie night');
     }
+  };
+
+  const handleDateClick = (date) => {
+    setAddModal(true);
+    setSelectedDate(date);
   };
 
   if (loading) {
@@ -204,7 +210,11 @@ function HomePage() {
             </button>
           </div>
         ) : view === 'calendar' ? (
-          <CalendarView movieNights={filteredMovieNights} onEdit={handleEditClick} />
+          <CalendarView 
+            movieNights={filteredMovieNights} 
+            onEdit={handleEditClick}
+            onDateClick={handleDateClick}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMovieNights.map((movie) => (
@@ -219,11 +229,15 @@ function HomePage() {
       </div>
 
       {/* Add Movie Night Modal */}
-      <MovieNightModal
+        <MovieNightModal
         isOpen={addModal}
-        onClose={() => setAddModal(false)}
+        onClose={() => {
+            setAddModal(false);
+            setSelectedDate(null);
+        }}
         onSave={handleAddSave}
-      />
+        initialDate={selectedDate}
+        />
 
       {/* Edit Movie Night Modal */}
       <MovieNightModal

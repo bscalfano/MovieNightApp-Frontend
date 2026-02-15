@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, startOfWeek, endOfWeek } from 'date-fns';
 
-function CalendarView({ movieNights, onDelete, onEdit }) {
+function CalendarView({ movieNights, onEdit, onDateClick }) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const monthStart = startOfMonth(currentDate);
@@ -23,6 +23,13 @@ function CalendarView({ movieNights, onDelete, onEdit }) {
 
   const nextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const handleDayClick = (day, moviesOnDay) => {
+    // If there are no movies on this day, open add modal with this date
+    if (moviesOnDay.length === 0 && onDateClick) {
+      onDateClick(day);
+    }
   };
 
   return (
@@ -61,13 +68,17 @@ function CalendarView({ movieNights, onDelete, onEdit }) {
           const moviesOnDay = getMoviesForDay(day);
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = isSameDay(day, new Date());
+          const hasMovies = moviesOnDay.length > 0;
 
           return (
             <div
               key={day.toISOString()}
-              className={`min-h-24 border rounded-lg p-2 ${
+              onClick={() => handleDayClick(day, moviesOnDay)}
+              className={`min-h-24 border rounded-lg p-2 transition ${
                 !isCurrentMonth ? 'bg-gray-50 text-gray-400' : 'bg-white'
-              } ${isToday ? 'ring-2 ring-indigo-500' : ''}`}
+              } ${isToday ? 'ring-2 ring-indigo-500' : ''} ${
+                !hasMovies ? 'hover:border-indigo-500 hover:border-2 cursor-pointer' : ''
+              }`}
             >
               <div className="font-semibold text-sm mb-1">
                 {format(day, 'd')}
@@ -75,7 +86,10 @@ function CalendarView({ movieNights, onDelete, onEdit }) {
               {moviesOnDay.map(movie => (
                 <button
                   key={movie.id}
-                  onClick={() => onEdit(movie.id)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent day click when clicking movie
+                    onEdit(movie.id);
+                  }}
                   className="w-full bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 hover:bg-indigo-200 transition cursor-pointer text-left"
                   title={`Click to edit: ${movie.movieTitle}`}
                 >
