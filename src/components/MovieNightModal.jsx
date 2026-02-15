@@ -10,6 +10,7 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
   const [hasBlurred, setHasBlurred] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [tmdbSelectedTitle, setTmdbSelectedTitle] = useState(null); // Track the TMDB-selected title
   
   const today = format(new Date(), 'yyyy-MM-dd');
   
@@ -22,7 +23,8 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
     genre: ''
   });
 
-// Reset form when modal opens/closes or initialData changes
+  // Reset form when modal opens/closes or initialData changes
+  // Reset form when modal opens/closes or initialData changes
 useEffect(() => {
   if (isOpen) {
     if (initialData) {
@@ -37,7 +39,9 @@ useEffect(() => {
         genre: initialData.genre || ''
       });
       setIsManualEntry(false);
-      setShowSearch(false); // Changed from true to false for edit mode
+      setShowSearch(false);
+      // Track the original title so we can detect changes
+      setTmdbSelectedTitle(initialData.movieTitle || null);
     } else {
       setFormData({
         movieTitle: '',
@@ -48,7 +52,8 @@ useEffect(() => {
         genre: ''
       });
       setIsManualEntry(false);
-      setShowSearch(true); // Keep true for add mode since field is empty
+      setShowSearch(true);
+      setTmdbSelectedTitle(null);
     }
     setErrors({});
     setHasBlurred(false);
@@ -67,13 +72,28 @@ useEffect(() => {
     setShowSearch(false);
     setIsManualEntry(false);
     setHasBlurred(false);
+    setTmdbSelectedTitle(movieData.title); // Remember the TMDB-selected title
   };
 
   const handleMovieTitleChange = (value) => {
-    setFormData(prev => ({
-      ...prev,
-      movieTitle: value
-    }));
+    // If user is modifying a TMDB-selected title, clear the auto-filled data
+    if (tmdbSelectedTitle && value !== tmdbSelectedTitle) {
+      setFormData(prev => ({
+        ...prev,
+        movieTitle: value,
+        notes: '',
+        imageUrl: '',
+        genre: ''
+      }));
+      setTmdbSelectedTitle(null); // Clear the tracking
+      setIsManualEntry(true);
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        movieTitle: value
+      }));
+    }
+    
     setShowSearch(true);
     if (errors.movieTitle) {
       setErrors(prev => ({ ...prev, movieTitle: '' }));
@@ -81,7 +101,7 @@ useEffect(() => {
   };
 
   const handleMovieTitleBlur = () => {
-    if (formData.movieTitle.trim() && showSearch) {
+    if (formData.movieTitle.trim() && showSearch && !tmdbSelectedTitle) {
       setIsManualEntry(true);
       setHasBlurred(true);
     }
