@@ -5,6 +5,7 @@ import profileService from '../services/profileService';
 import authService from '../services/authService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ConfirmDialog from '../components/ConfirmDialog';
+import ProfilePicture from '../components/ProfilePicture';
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -18,7 +19,8 @@ function ProfilePage() {
   const [profileForm, setProfileForm] = useState({
     email: '',
     firstName: '',
-    lastName: ''
+    lastName: '',
+    profilePictureUrl: ''
   });
 
   const [passwordForm, setPasswordForm] = useState({
@@ -32,21 +34,22 @@ function ProfilePage() {
   }, []);
 
   const loadProfile = async () => {
-    try {
-      const data = await profileService.getProfile();
-      setProfile(data);
-      setProfileForm({
-        email: data.email,
-        firstName: data.firstName || '',
-        lastName: data.lastName || ''
-      });
-      setLoading(false);
-    } catch (error) {
-      console.error('Error loading profile:', error);
-      toast.error('Failed to load profile');
-      setLoading(false);
-    }
-  };
+  try {
+    const data = await profileService.getProfile();
+    setProfile(data);
+    setProfileForm({
+      email: data.email,
+      firstName: data.firstName || '',
+      lastName: data.lastName || '',
+      profilePictureUrl: data.profilePictureUrl || ''
+    });
+    setLoading(false);
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    toast.error('Failed to load profile');
+    setLoading(false);
+  }
+};
 
   const handleProfileChange = (e) => {
     setProfileForm({
@@ -67,29 +70,31 @@ function ProfilePage() {
     setSaving(true);
 
     try {
-      await profileService.updateProfile(
+        await profileService.updateProfile(
         profileForm.email,
         profileForm.firstName,
-        profileForm.lastName
-      );
-      toast.success('Profile updated successfully!');
-      
-      // Update stored user info
-      const currentUser = authService.getCurrentUser();
-      if (currentUser) {
+        profileForm.lastName,
+        profileForm.profilePictureUrl
+        );
+        toast.success('Profile updated successfully!');
+        
+        // Update stored user info
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
         currentUser.email = profileForm.email;
         currentUser.firstName = profileForm.firstName;
         currentUser.lastName = profileForm.lastName;
+        currentUser.profilePictureUrl = profileForm.profilePictureUrl;
         localStorage.setItem('user', JSON.stringify(currentUser));
-      }
-      
-      await loadProfile();
-      setEditMode(false);
-      setSaving(false);
+        }
+        
+        await loadProfile();
+        setEditMode(false);
+        setSaving(false);
     } catch (error) {
-      console.error('Error updating profile:', error);
-      toast.error(error.response?.data?.message || 'Failed to update profile');
-      setSaving(false);
+        console.error('Error updating profile:', error);
+        toast.error(error.response?.data?.message || 'Failed to update profile');
+        setSaving(false);
     }
   };
 
@@ -163,27 +168,39 @@ function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Stats */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Statistics</h3>
+            <div className="flex flex-col items-center mb-6">
+                <ProfilePicture
+                src={profile.profilePictureUrl}
+                alt={profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : profile.email}
+                size="lg"
+                />
+                <h3 className="text-lg font-semibold text-gray-900 mt-4">
+                {profile.firstName && profile.lastName
+                    ? `${profile.firstName} ${profile.lastName}`
+                    : profile.email}
+                </h3>
+            </div>
+            <h4 className="text-md font-semibold text-gray-700 mb-4 border-t pt-4">Statistics</h4>
             <div className="space-y-4">
-              <div>
+                <div>
                 <p className="text-sm text-gray-600">Total Movie Nights</p>
                 <p className="text-3xl font-bold text-indigo-600">{profile.totalMovieNights}</p>
-              </div>
-              <div>
+                </div>
+                <div>
                 <p className="text-sm text-gray-600">Upcoming</p>
                 <p className="text-3xl font-bold text-green-600">{profile.upcomingMovieNights}</p>
-              </div>
-              <div>
+                </div>
+                <div>
                 <p className="text-sm text-gray-600">Member Since</p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {new Date(profile.createdAt).toLocaleDateString('en-US', {
+                    {new Date(profile.createdAt).toLocaleDateString('en-US', {
                     month: 'long',
                     year: 'numeric'
-                  })}
+                    })}
                 </p>
-              </div>
+                </div>
             </div>
-          </div>
+        </div>
 
           {/* Profile Info / Edit */}
           <div className="md:col-span-2 bg-white rounded-lg shadow-md p-6">
@@ -228,18 +245,40 @@ function ProfilePage() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={profileForm.email}
-                    onChange={handleProfileChange}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email
+                    </label>
+                    <input
+                        type="email"
+                        name="email"
+                        value={profileForm.email}
+                        onChange={handleProfileChange}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    </div>
+                    <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Profile Picture URL
+                    </label>
+                    <input
+                        type="url"
+                        name="profilePictureUrl"
+                        value={profileForm.profilePictureUrl}
+                        onChange={handleProfileChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder="https://example.com/your-photo.jpg"
+                    />
+                    {profileForm.profilePictureUrl && (
+                        <div className="mt-2">
+                        <ProfilePicture
+                            src={profileForm.profilePictureUrl}
+                            alt="Preview"
+                            size="lg"
+                        />
+                        </div>
+                    )}
+                    </div>
                 <div className="flex gap-3">
                   <button
                     type="submit"
