@@ -3,12 +3,13 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import MovieSearch from './MovieSearch';
 
-function MovieNightModal({ isOpen, onClose, onSave, initialData = null }) {
+function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null }) {
   const [errors, setErrors] = useState({});
   const [showSearch, setShowSearch] = useState(true);
   const [isManualEntry, setIsManualEntry] = useState(false);
   const [hasBlurred, setHasBlurred] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   const today = format(new Date(), 'yyyy-MM-dd');
   
@@ -50,6 +51,7 @@ function MovieNightModal({ isOpen, onClose, onSave, initialData = null }) {
       setErrors({});
       setShowSearch(true);
       setHasBlurred(false);
+      setShowDeleteConfirm(false);
     }
   }, [isOpen, initialData]);
 
@@ -160,6 +162,21 @@ function MovieNightModal({ isOpen, onClose, onSave, initialData = null }) {
       setSaving(false);
       toast.error('Failed to save movie night');
     }
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (onDelete && initialData) {
+      onDelete(initialData.id, initialData.movieTitle);
+      onClose();
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
   };
 
   if (!isOpen) return null;
@@ -318,23 +335,62 @@ function MovieNightModal({ isOpen, onClose, onSave, initialData = null }) {
 
             {/* Footer Buttons */}
             <div className="flex gap-3 pt-4 border-t">
+              {initialData && onDelete && (
+                <button
+                  type="button"
+                  onClick={handleDeleteClick}
+                  className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition font-semibold"
+                  disabled={saving}
+                >
+                  Delete
+                </button>
+              )}
+              <div className="flex-1"></div>
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition font-semibold"
+                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition font-semibold"
                 disabled={saving}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400"
+                className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400"
                 disabled={saving}
               >
                 {saving ? 'Saving...' : (initialData ? 'Update' : 'Create')}
               </button>
             </div>
           </form>
+
+          {/* Delete Confirmation Overlay */}
+          {showDeleteConfirm && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Delete Movie Night
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Are you sure you want to delete "{formData.movieTitle}"? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleDeleteCancel}
+                    className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition font-semibold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteConfirm}
+                    className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition font-semibold"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

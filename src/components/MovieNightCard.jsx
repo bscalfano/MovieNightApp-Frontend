@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 
-function MovieNightCard({ movieNight, onDelete, onEdit }) {
+function MovieNightCard({ movieNight, onEdit }) {
   const formattedDate = format(new Date(movieNight.scheduledDate), 'EEEE, MMMM d, yyyy');
   
   return (
@@ -24,20 +24,12 @@ function MovieNightCard({ movieNight, onDelete, onEdit }) {
         {movieNight.notes && (
           <p className="text-gray-700 text-sm mb-4 italic line-clamp-3">"{movieNight.notes}"</p>
         )}
-        <div className="flex gap-2">
-          <button
-            onClick={() => onEdit(movieNight.id)}
-            className="flex-1 text-center bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => onDelete(movieNight.id, movieNight.movieTitle)}
-            className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600 transition"
-          >
-            Delete
-          </button>
-        </div>
+        <button
+          onClick={() => onEdit(movieNight.id)}
+          className="w-full text-center bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+        >
+          View / Edit
+        </button>
       </div>
     </div>
   );

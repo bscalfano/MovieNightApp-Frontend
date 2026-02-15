@@ -5,7 +5,6 @@ import movieNightService from '../services/movieNightService';
 import MovieNightCard from '../components/MovieNightCard';
 import CalendarView from '../components/CalendarView';
 import LoadingSpinner from '../components/LoadingSpinner';
-import ConfirmDialog from '../components/ConfirmDialog';
 import MovieNightModal from '../components/MovieNightModal';
 
 function HomePage() {
@@ -14,7 +13,6 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('calendar');
   const [searchTerm, setSearchTerm] = useState('');
-  const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, movieId: null, movieTitle: '' });
   const [addModal, setAddModal] = useState(false);
   const [editModal, setEditModal] = useState({ isOpen: false, movieNight: null });
 
@@ -57,7 +55,7 @@ function HomePage() {
       toast.success('Movie night created successfully! 🎬');
       loadMovieNights();
     } catch (error) {
-      throw error; // Let modal handle the error
+      throw error;
     }
   };
 
@@ -74,30 +72,23 @@ function HomePage() {
     try {
       await movieNightService.update(editModal.movieNight.id, formData);
       toast.success('Movie night updated successfully! ✨');
+      setEditModal({ isOpen: false, movieNight: null });
       loadMovieNights();
     } catch (error) {
-      throw error; // Let modal handle the error
+      throw error;
     }
   };
 
-  const handleDeleteClick = (id, title) => {
-    setDeleteDialog({ isOpen: true, movieId: id, movieTitle: title });
-  };
-
-  const handleDeleteConfirm = async () => {
+  const handleDelete = async (id, title) => {
     try {
-      await movieNightService.delete(deleteDialog.movieId);
+      await movieNightService.delete(id);
       toast.success('Movie night deleted');
-      setDeleteDialog({ isOpen: false, movieId: null, movieTitle: '' });
+      setEditModal({ isOpen: false, movieNight: null });
       loadMovieNights();
     } catch (err) {
       console.error('Error deleting movie night:', err);
       toast.error('Failed to delete movie night');
     }
-  };
-
-  const handleDeleteCancel = () => {
-    setDeleteDialog({ isOpen: false, movieId: null, movieTitle: '' });
   };
 
   if (loading) {
@@ -183,14 +174,13 @@ function HomePage() {
             </button>
           </div>
         ) : view === 'calendar' ? (
-          <CalendarView movieNights={filteredMovieNights} onDelete={handleDeleteClick} onEdit={handleEditClick} />
+          <CalendarView movieNights={filteredMovieNights} onEdit={handleEditClick} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMovieNights.map((movie) => (
               <MovieNightCard
                 key={movie.id}
                 movieNight={movie}
-                onDelete={handleDeleteClick}
                 onEdit={handleEditClick}
               />
             ))}
@@ -210,16 +200,8 @@ function HomePage() {
         isOpen={editModal.isOpen}
         onClose={() => setEditModal({ isOpen: false, movieNight: null })}
         onSave={handleEditSave}
+        onDelete={handleDelete}
         initialData={editModal.movieNight}
-      />
-
-      {/* Delete Confirmation Dialog */}
-      <ConfirmDialog
-        isOpen={deleteDialog.isOpen}
-        onClose={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        title="Delete Movie Night"
-        message={`Are you sure you want to delete "${deleteDialog.movieTitle}"? This action cannot be undone.`}
       />
     </div>
   );

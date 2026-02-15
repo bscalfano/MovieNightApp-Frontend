@@ -73,37 +73,15 @@ function CalendarView({ movieNights, onDelete, onEdit }) {
                 {format(day, 'd')}
               </div>
               {moviesOnDay.map(movie => (
-                <div
+                <button
                   key={movie.id}
-                  className="bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 group relative"
+                  onClick={() => onEdit(movie.id)}
+                  className="w-full bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 hover:bg-indigo-200 transition cursor-pointer text-left"
+                  title={`Click to edit: ${movie.movieTitle}`}
                 >
                   <div className="font-semibold truncate">{movie.movieTitle}</div>
                   <div className="text-xs">{movie.startTime}</div>
-                  
-                  {/* Hover actions */}
-                  <div className="hidden group-hover:flex absolute top-0 right-0 gap-1 p-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit(movie.id);
-                      }}
-                      className="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600"
-                      title="Edit"
-                    >
-                      ✎
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(movie.id, movie.movieTitle);
-                      }}
-                      className="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600"
-                      title="Delete"
-                    >
-                      ×
-                    </button>
-                  </div>
-                </div>
+                </button>
               ))}
             </div>
           );

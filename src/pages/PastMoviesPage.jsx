@@ -4,13 +4,11 @@ import toast from 'react-hot-toast';
 import movieNightService from '../services/movieNightService';
 import MovieNightCard from '../components/MovieNightCard';
 import LoadingSpinner from '../components/LoadingSpinner';
-import ConfirmDialog from '../components/ConfirmDialog';
 import MovieNightModal from '../components/MovieNightModal';
 
 function PastMoviesPage() {
   const [movieNights, setMovieNights] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, movieId: null, movieTitle: '' });
   const [editModal, setEditModal] = useState({ isOpen: false, movieNight: null });
 
   useEffect(() => {
@@ -42,30 +40,23 @@ function PastMoviesPage() {
     try {
       await movieNightService.update(editModal.movieNight.id, formData);
       toast.success('Movie night updated successfully! ✨');
+      setEditModal({ isOpen: false, movieNight: null });
       loadPastMovies();
     } catch (error) {
       throw error;
     }
   };
 
-  const handleDeleteClick = (id, title) => {
-    setDeleteDialog({ isOpen: true, movieId: id, movieTitle: title });
-  };
-
-  const handleDeleteConfirm = async () => {
+  const handleDelete = async (id, title) => {
     try {
-      await movieNightService.delete(deleteDialog.movieId);
+      await movieNightService.delete(id);
       toast.success('Movie night deleted');
-      setDeleteDialog({ isOpen: false, movieId: null, movieTitle: '' });
+      setEditModal({ isOpen: false, movieNight: null });
       loadPastMovies();
     } catch (err) {
       console.error('Error deleting movie night:', err);
       toast.error('Failed to delete movie night');
     }
-  };
-
-  const handleDeleteCancel = () => {
-    setDeleteDialog({ isOpen: false, movieId: null, movieTitle: '' });
   };
 
   if (loading) {
@@ -103,7 +94,6 @@ function PastMoviesPage() {
               <MovieNightCard
                 key={movie.id}
                 movieNight={movie}
-                onDelete={handleDeleteClick}
                 onEdit={handleEditClick}
               />
             ))}
@@ -116,16 +106,8 @@ function PastMoviesPage() {
         isOpen={editModal.isOpen}
         onClose={() => setEditModal({ isOpen: false, movieNight: null })}
         onSave={handleEditSave}
+        onDelete={handleDelete}
         initialData={editModal.movieNight}
-      />
-
-      {/* Delete Confirmation Dialog */}
-      <ConfirmDialog
-        isOpen={deleteDialog.isOpen}
-        onClose={handleDeleteCancel}
-        onConfirm={handleDeleteConfirm}
-        title="Delete Movie Night"
-        message={`Are you sure you want to delete "${deleteDialog.movieTitle}"? This action cannot be undone.`}
       />
     </div>
   );
