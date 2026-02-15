@@ -1,25 +1,36 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import LandingPage from './pages/LandingPage';
 import HomePage from './pages/HomePage';
 import PastMoviesPage from './pages/PastMoviesPage';
 import ProfilePage from './pages/ProfilePage';
 import FindFriendsPage from './pages/FindFriendsPage';
+import PublicCalendarPage from './pages/PublicCalendarPage';
+import UserFriendsPage from './pages/UserFriendsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import PublicCalendarPage from './pages/PublicCalendarPage';
-import UserFriendsPage from './pages/UserFriendsPage';
+import authService from './services/authService';
 import './App.css';
 
 function App() {
+  const isAuthenticated = authService.getCurrentUser() !== null;
+
   return (
     <Router>
       <Toaster position="top-right" />
       <Routes>
+        {/* Public Routes */}
+        <Route 
+          path="/" 
+          element={isAuthenticated ? <Navigate to="/calendar" replace /> : <LandingPage />} 
+        />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+
+        {/* Protected Routes */}
         <Route
-          path="/"
+          path="/calendar"
           element={
             <ProtectedRoute>
               <HomePage />

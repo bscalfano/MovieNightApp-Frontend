@@ -25,7 +25,7 @@ function LoginPage() {
     try {
       await authService.login(formData.email, formData.password);
       toast.success('Welcome back!');
-      navigate('/');
+      navigate('/calendar');
     } catch (error) {
       console.error('Login error:', error);
       toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.');

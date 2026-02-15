@@ -44,7 +44,7 @@ function RegisterPage() {
         formData.lastName
       );
       toast.success('Account created successfully!');
-      navigate('/');
+      navigate('/calendar');
     } catch (error) {
       console.error('Registration error:', error);
       const errorMessage = error.response?.data?.errors 

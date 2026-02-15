@@ -158,7 +158,7 @@ function ProfilePage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <Link to="/" className="text-indigo-600 hover:text-indigo-800 mb-2 inline-block">
+            <Link to="/calendar" className="text-indigo-600 hover:text-indigo-800 mb-2 inline-block">
               ← Back to Calendar
             </Link>
             <h1 className="text-4xl font-bold text-gray-900">Profile Settings</h1>

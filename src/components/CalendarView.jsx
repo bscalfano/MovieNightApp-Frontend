@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, startOfWeek, endOfWeek } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, startOfWeek, endOfWeek, isBefore, startOfDay } from 'date-fns';
 import { format12Hour } from '../utils/timeFormat';
 
 function CalendarView({ movieNights, onEdit, onDateClick }) {
@@ -31,6 +31,13 @@ function CalendarView({ movieNights, onEdit, onDateClick }) {
     if (e.target.closest('.movie-card-button')) {
       return;
     }
+
+    // Don't allow clicking on past dates
+    const today = startOfDay(new Date());
+    if (isBefore(startOfDay(day), today)) {
+      return;
+    }
+
     if (onDateClick) {
       onDateClick(day);
     }
@@ -72,14 +79,17 @@ function CalendarView({ movieNights, onEdit, onDateClick }) {
           const moviesOnDay = getMoviesForDay(day);
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = isSameDay(day, new Date());
+          const isPast = isBefore(startOfDay(day), startOfDay(new Date()));
 
           return (
             <div
               key={day.toISOString()}
               onClick={(e) => handleDayClick(day, e)}
-              className={`min-h-24 border-2 rounded-lg p-2 transition cursor-pointer ${
+              className={`min-h-24 border-2 rounded-lg p-2 transition ${
                 !isCurrentMonth ? 'bg-gray-50 text-gray-400 border-gray-200' : 'bg-white border-gray-300'
-              } ${isToday ? 'ring-2 ring-indigo-500' : ''} hover:border-indigo-500`}
+              } ${isToday ? 'ring-2 ring-indigo-500' : ''} ${
+                isPast ? 'opacity-60' : 'cursor-pointer hover:border-indigo-500'
+              }`}
             >
               <div className="font-semibold text-sm mb-1">
                 {format(day, 'd')}

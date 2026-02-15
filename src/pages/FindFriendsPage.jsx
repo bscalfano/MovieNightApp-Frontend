@@ -19,9 +19,8 @@ function FindFriendsPage() {
   const [removeFriendDialog, setRemoveFriendDialog] = useState({ isOpen: false, userId: null, userName: '' });
 
   // Determine back link based on where user came from
-  const backLink = location.state?.from || '/';
+  const backLink = location.state?.from || '/calendar';
   const backText = location.state?.from === '/profile' ? '← Back to Profile' : '← Back to Calendar';
-
   useEffect(() => {
     loadFriendData();
   }, []);

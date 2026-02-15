@@ -60,7 +60,7 @@ function HomePage() {
   const handleLogout = () => {
     authService.logout();
     toast.success('Logged out successfully');
-    navigate('/login');
+    navigate('/');
   };
 
   const handleAddClick = () => {
@@ -142,7 +142,7 @@ function HomePage() {
             <div className="flex gap-3 items-center">
               <Link
                 to="/friends"
-                state={{ from: '/' }}
+                state={{ from: '/calendar' }}
                 className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition whitespace-nowrap"
               >
                 Find Friends

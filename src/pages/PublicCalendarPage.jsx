@@ -42,24 +42,24 @@ function PublicCalendarPage() {
     }
   };
 
-  const handleMovieClick = (id) => {
+    const handleMovieClick = (id) => {
     if (calendarData.isOwnCalendar) {
-      // If viewing own calendar, redirect to home page to edit
-      navigate('/', { state: { editMovieId: id } });
+        // If viewing own calendar, redirect to home page to edit
+        navigate('/calendar', { state: { editMovieId: id } });
     } else {
-      // If viewing someone else's calendar, open view-only modal
-      setViewModal({ isOpen: true, movieNightId: id });
+        // If viewing someone else's calendar, open view-only modal
+        setViewModal({ isOpen: true, movieNightId: id });
     }
-  };
+    };
 
-  const handleDateClick = (date) => {
+    const handleDateClick = (date) => {
     // Only allow adding if viewing own calendar
     if (calendarData.isOwnCalendar) {
-      navigate('/', { state: { addMovieDate: date } });
+        navigate('/calendar', { state: { addMovieDate: date } });
     } else {
-      toast.info('You can only add movie nights to your own calendar');
+        toast.info('You can only add movie nights to your own calendar');
     }
-  };
+    };
 
   if (loading) {
     return <LoadingSpinner message="Loading calendar..." />;
@@ -117,7 +117,7 @@ function PublicCalendarPage() {
             </div>
             {isOwnCalendar && (
               <Link
-                to="/"
+                to="/calendar"
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition whitespace-nowrap"
               >
                 Go to My Calendar
