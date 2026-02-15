@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import friendsService from '../services/friendsService';
 import ProfilePicture from '../components/ProfilePicture';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 function FindFriendsPage() {
   const location = useLocation();
@@ -15,6 +16,7 @@ function FindFriendsPage() {
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [activeTab, setActiveTab] = useState(location.state?.defaultTab || 'search');
+  const [removeFriendDialog, setRemoveFriendDialog] = useState({ isOpen: false, userId: null, userName: '' });
 
   // Determine back link based on where user came from
   const backLink = location.state?.from || '/';
@@ -117,19 +119,20 @@ function FindFriendsPage() {
     }
   };
 
-  const handleRemoveFriend = async (userId) => {
-    if (!window.confirm('Are you sure you want to remove this friend?')) {
-      return;
-    }
+  const handleRemoveFriendClick = (userId, userName) => {
+    setRemoveFriendDialog({ isOpen: true, userId, userName });
+  };
 
+  const handleRemoveFriendConfirm = async () => {
     try {
-      await friendsService.removeFriend(userId);
+      await friendsService.removeFriend(removeFriendDialog.userId);
       toast.success('Friend removed');
+      setRemoveFriendDialog({ isOpen: false, userId: null, userName: '' });
       await loadFriendData();
       
       // Update search results if present
       setSearchResults(prev => prev.map(user => 
-        user.id === userId ? { ...user, friendshipStatus: 'none' } : user
+        user.id === removeFriendDialog.userId ? { ...user, friendshipStatus: 'none' } : user
       ));
     } catch (error) {
       console.error('Error removing friend:', error);
@@ -137,12 +140,19 @@ function FindFriendsPage() {
     }
   };
 
+  const handleRemoveFriendCancel = () => {
+    setRemoveFriendDialog({ isOpen: false, userId: null, userName: '' });
+  };
+
   const renderActionButton = (user) => {
     switch (user.friendshipStatus) {
       case 'friends':
         return (
           <button
-            onClick={() => handleRemoveFriend(user.id)}
+            onClick={() => handleRemoveFriendClick(
+              user.id,
+              user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email
+            )}
             className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
           >
             Remove Friend
@@ -351,6 +361,15 @@ function FindFriendsPage() {
         {activeTab === 'friends' && renderUserList(friends)}
         {activeTab === 'requests' && renderPendingRequests()}
       </div>
+
+      {/* Remove Friend Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={removeFriendDialog.isOpen}
+        onClose={handleRemoveFriendCancel}
+        onConfirm={handleRemoveFriendConfirm}
+        title="Remove Friend"
+        message={`Are you sure you want to remove ${removeFriendDialog.userName} from your friends? You can send them a friend request again later.`}
+      />
     </div>
   );
 }
