@@ -6,12 +6,14 @@ import authService from '../services/authService';
 import CalendarView from '../components/CalendarView';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ProfilePicture from '../components/ProfilePicture';
+import MovieNightViewModal from '../components/MovieNightViewModal';
 
 function PublicCalendarPage() {
   const { userId } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [calendarData, setCalendarData] = useState(null);
+  const [viewModal, setViewModal] = useState({ isOpen: false, movieNight: null });
   const currentUser = authService.getCurrentUser();
 
   useEffect(() => {
@@ -37,12 +39,16 @@ function PublicCalendarPage() {
     }
   };
 
-  const handleEditClick = (id) => {
-    // Only allow editing if viewing own calendar
-    if (calendarData.isOwnCalendar) {
-      navigate('/', { state: { editMovieId: id } });
-    } else {
-      toast.info('You can only edit your own movie nights');
+  const handleMovieClick = (id) => {
+    const movie = calendarData.movieNights.find(m => m.id === id);
+    if (movie) {
+      if (calendarData.isOwnCalendar) {
+        // If viewing own calendar, redirect to home page to edit
+        navigate('/', { state: { editMovieId: id } });
+      } else {
+        // If viewing someone else's calendar, open view-only modal
+        setViewModal({ isOpen: true, movieNight: movie });
+      }
     }
   };
 
@@ -132,11 +138,18 @@ function PublicCalendarPage() {
         ) : (
           <CalendarView 
             movieNights={movieNights} 
-            onEdit={handleEditClick}
+            onEdit={handleMovieClick}
             onDateClick={handleDateClick}
           />
         )}
       </div>
+
+      {/* View-Only Modal */}
+      <MovieNightViewModal
+        isOpen={viewModal.isOpen}
+        onClose={() => setViewModal({ isOpen: false, movieNight: null })}
+        movieNight={viewModal.movieNight}
+      />
     </div>
   );
 }
