@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, startOfWeek, endOfWeek } from 'date-fns';
-import { Link } from 'react-router-dom';
 
-function CalendarView({ movieNights, onDelete }) {
+function CalendarView({ movieNights, onDelete, onEdit }) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const monthStart = startOfMonth(currentDate);
@@ -76,11 +75,34 @@ function CalendarView({ movieNights, onDelete }) {
               {moviesOnDay.map(movie => (
                 <div
                   key={movie.id}
-                  className="bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 cursor-pointer hover:bg-indigo-200"
-                  title={`${movie.movieTitle} at ${movie.startTime}`}
+                  className="bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 group relative"
                 >
                   <div className="font-semibold truncate">{movie.movieTitle}</div>
                   <div className="text-xs">{movie.startTime}</div>
+                  
+                  {/* Hover actions */}
+                  <div className="hidden group-hover:flex absolute top-0 right-0 gap-1 p-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(movie.id);
+                      }}
+                      className="bg-blue-500 text-white text-xs px-2 py-1 rounded hover:bg-blue-600"
+                      title="Edit"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(movie.id, movie.movieTitle);
+                      }}
+                      className="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600"
+                      title="Delete"
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

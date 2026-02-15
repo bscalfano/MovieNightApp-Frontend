@@ -6,6 +6,7 @@ import MovieNightCard from '../components/MovieNightCard';
 import CalendarView from '../components/CalendarView';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ConfirmDialog from '../components/ConfirmDialog';
+import MovieNightModal from '../components/MovieNightModal';
 
 function HomePage() {
   const [movieNights, setMovieNights] = useState([]);
@@ -14,6 +15,8 @@ function HomePage() {
   const [view, setView] = useState('calendar');
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, movieId: null, movieTitle: '' });
+  const [addModal, setAddModal] = useState(false);
+  const [editModal, setEditModal] = useState({ isOpen: false, movieNight: null });
 
   useEffect(() => {
     loadMovieNights();
@@ -41,6 +44,39 @@ function HomePage() {
       console.error('Error loading movie nights:', err);
       toast.error('Failed to load movie nights');
       setLoading(false);
+    }
+  };
+
+  const handleAddClick = () => {
+    setAddModal(true);
+  };
+
+  const handleAddSave = async (formData) => {
+    try {
+      await movieNightService.create(formData);
+      toast.success('Movie night created successfully! 🎬');
+      loadMovieNights();
+    } catch (error) {
+      throw error; // Let modal handle the error
+    }
+  };
+
+  const handleEditClick = async (id) => {
+    try {
+      const movieNight = await movieNightService.getById(id);
+      setEditModal({ isOpen: true, movieNight });
+    } catch (error) {
+      toast.error('Failed to load movie night');
+    }
+  };
+
+  const handleEditSave = async (formData) => {
+    try {
+      await movieNightService.update(editModal.movieNight.id, formData);
+      toast.success('Movie night updated successfully! ✨');
+      loadMovieNights();
+    } catch (error) {
+      throw error; // Let modal handle the error
     }
   };
 
@@ -81,12 +117,12 @@ function HomePage() {
             >
               View Past Movies
             </Link>
-            <Link
-              to="/add"
+            <button
+              onClick={handleAddClick}
               className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition"
             >
               + Add Movie Night
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -139,15 +175,15 @@ function HomePage() {
         ) : filteredMovieNights.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-xl text-gray-600 mb-4">No upcoming movie nights scheduled.</p>
-            <Link
-              to="/add"
+            <button
+              onClick={handleAddClick}
               className="text-indigo-600 hover:text-indigo-800 font-semibold"
             >
               Schedule your first movie night!
-            </Link>
+            </button>
           </div>
         ) : view === 'calendar' ? (
-          <CalendarView movieNights={filteredMovieNights} onDelete={handleDeleteClick} />
+          <CalendarView movieNights={filteredMovieNights} onDelete={handleDeleteClick} onEdit={handleEditClick} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMovieNights.map((movie) => (
@@ -155,11 +191,27 @@ function HomePage() {
                 key={movie.id}
                 movieNight={movie}
                 onDelete={handleDeleteClick}
+                onEdit={handleEditClick}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Add Movie Night Modal */}
+      <MovieNightModal
+        isOpen={addModal}
+        onClose={() => setAddModal(false)}
+        onSave={handleAddSave}
+      />
+
+      {/* Edit Movie Night Modal */}
+      <MovieNightModal
+        isOpen={editModal.isOpen}
+        onClose={() => setEditModal({ isOpen: false, movieNight: null })}
+        onSave={handleEditSave}
+        initialData={editModal.movieNight}
+      />
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

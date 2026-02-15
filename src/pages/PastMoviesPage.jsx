@@ -5,11 +5,13 @@ import movieNightService from '../services/movieNightService';
 import MovieNightCard from '../components/MovieNightCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ConfirmDialog from '../components/ConfirmDialog';
+import MovieNightModal from '../components/MovieNightModal';
 
 function PastMoviesPage() {
   const [movieNights, setMovieNights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteDialog, setDeleteDialog] = useState({ isOpen: false, movieId: null, movieTitle: '' });
+  const [editModal, setEditModal] = useState({ isOpen: false, movieNight: null });
 
   useEffect(() => {
     loadPastMovies();
@@ -24,6 +26,25 @@ function PastMoviesPage() {
       console.error('Error loading past movies:', err);
       toast.error('Failed to load past movies');
       setLoading(false);
+    }
+  };
+
+  const handleEditClick = async (id) => {
+    try {
+      const movieNight = await movieNightService.getById(id);
+      setEditModal({ isOpen: true, movieNight });
+    } catch (error) {
+      toast.error('Failed to load movie night');
+    }
+  };
+
+  const handleEditSave = async (formData) => {
+    try {
+      await movieNightService.update(editModal.movieNight.id, formData);
+      toast.success('Movie night updated successfully! ✨');
+      loadPastMovies();
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -70,10 +91,10 @@ function PastMoviesPage() {
           <div className="text-center py-12">
             <p className="text-xl text-gray-600 mb-4">No past movie nights yet.</p>
             <Link
-              to="/add"
+              to="/"
               className="text-indigo-600 hover:text-indigo-800 font-semibold"
             >
-              Schedule your first movie night!
+              Go back to calendar
             </Link>
           </div>
         ) : (
@@ -83,11 +104,20 @@ function PastMoviesPage() {
                 key={movie.id}
                 movieNight={movie}
                 onDelete={handleDeleteClick}
+                onEdit={handleEditClick}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Edit Movie Night Modal */}
+      <MovieNightModal
+        isOpen={editModal.isOpen}
+        onClose={() => setEditModal({ isOpen: false, movieNight: null })}
+        onSave={handleEditSave}
+        initialData={editModal.movieNight}
+      />
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

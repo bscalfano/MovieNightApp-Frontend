@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 
-function MovieNightCard({ movieNight, onDelete }) {
+function MovieNightCard({ movieNight, onDelete, onEdit }) {
   const formattedDate = format(new Date(movieNight.scheduledDate), 'EEEE, MMMM d, yyyy');
   
   return (
@@ -26,12 +25,12 @@ function MovieNightCard({ movieNight, onDelete }) {
           <p className="text-gray-700 text-sm mb-4 italic line-clamp-3">"{movieNight.notes}"</p>
         )}
         <div className="flex gap-2">
-          <Link
-            to={`/edit/${movieNight.id}`}
+          <button
+            onClick={() => onEdit(movieNight.id)}
             className="flex-1 text-center bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
           >
             Edit
-          </Link>
+          </button>
           <button
             onClick={() => onDelete(movieNight.id, movieNight.movieTitle)}
             className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600 transition"
