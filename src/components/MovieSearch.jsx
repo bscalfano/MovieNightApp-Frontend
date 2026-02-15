@@ -69,6 +69,7 @@ function MovieSearch({ onMovieSelect, movieTitle, onMovieTitleChange, onBlur, sh
   const handleBlur = (e) => {
     // Delay to allow click events on results to fire first
     setTimeout(() => {
+      setShowResults(false); // Hide the dropdown
       if (onBlur) {
         onBlur();
       }

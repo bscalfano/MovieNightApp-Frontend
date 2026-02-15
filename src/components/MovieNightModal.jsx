@@ -22,38 +22,39 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
     genre: ''
   });
 
-  // Reset form when modal opens/closes or initialData changes
-  useEffect(() => {
-    if (isOpen) {
-      if (initialData) {
-        setFormData({
-          movieTitle: initialData.movieTitle || '',
-          scheduledDate: initialData.scheduledDate 
-            ? format(new Date(initialData.scheduledDate), 'yyyy-MM-dd')
-            : '',
-          startTime: initialData.startTime || '19:00:00',
-          notes: initialData.notes || '',
-          imageUrl: initialData.imageUrl || '',
-          genre: initialData.genre || ''
-        });
-        setIsManualEntry(false);
-      } else {
-        setFormData({
-          movieTitle: '',
-          scheduledDate: '',
-          startTime: '19:00:00',
-          notes: '',
-          imageUrl: '',
-          genre: ''
-        });
-        setIsManualEntry(false);
-      }
-      setErrors({});
-      setShowSearch(true);
-      setHasBlurred(false);
-      setShowDeleteConfirm(false);
+// Reset form when modal opens/closes or initialData changes
+useEffect(() => {
+  if (isOpen) {
+    if (initialData) {
+      setFormData({
+        movieTitle: initialData.movieTitle || '',
+        scheduledDate: initialData.scheduledDate 
+          ? format(new Date(initialData.scheduledDate), 'yyyy-MM-dd')
+          : '',
+        startTime: initialData.startTime || '19:00:00',
+        notes: initialData.notes || '',
+        imageUrl: initialData.imageUrl || '',
+        genre: initialData.genre || ''
+      });
+      setIsManualEntry(false);
+      setShowSearch(false); // Changed from true to false for edit mode
+    } else {
+      setFormData({
+        movieTitle: '',
+        scheduledDate: '',
+        startTime: '19:00:00',
+        notes: '',
+        imageUrl: '',
+        genre: ''
+      });
+      setIsManualEntry(false);
+      setShowSearch(true); // Keep true for add mode since field is empty
     }
-  }, [isOpen, initialData]);
+    setErrors({});
+    setHasBlurred(false);
+    setShowDeleteConfirm(false);
+  }
+}, [isOpen, initialData]);
 
   const handleMovieSelect = (movieData) => {
     setFormData(prev => ({
