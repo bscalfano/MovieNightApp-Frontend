@@ -10,7 +10,7 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
   const [hasBlurred, setHasBlurred] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [tmdbSelectedTitle, setTmdbSelectedTitle] = useState(null); // Track the TMDB-selected title
+  const [tmdbSelectedTitle, setTmdbSelectedTitle] = useState(null);
   
   const today = format(new Date(), 'yyyy-MM-dd');
   
@@ -23,43 +23,40 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
     genre: ''
   });
 
-  // Reset form when modal opens/closes or initialData changes
-  // Reset form when modal opens/closes or initialData changes
-useEffect(() => {
-  if (isOpen) {
-    if (initialData) {
-      setFormData({
-        movieTitle: initialData.movieTitle || '',
-        scheduledDate: initialData.scheduledDate 
-          ? format(new Date(initialData.scheduledDate), 'yyyy-MM-dd')
-          : '',
-        startTime: initialData.startTime || '19:00:00',
-        notes: initialData.notes || '',
-        imageUrl: initialData.imageUrl || '',
-        genre: initialData.genre || ''
-      });
-      setIsManualEntry(false);
-      setShowSearch(false);
-      // Track the original title so we can detect changes
-      setTmdbSelectedTitle(initialData.movieTitle || null);
-    } else {
-      setFormData({
-        movieTitle: '',
-        scheduledDate: '',
-        startTime: '19:00:00',
-        notes: '',
-        imageUrl: '',
-        genre: ''
-      });
-      setIsManualEntry(false);
-      setShowSearch(true);
-      setTmdbSelectedTitle(null);
+  useEffect(() => {
+    if (isOpen) {
+      if (initialData) {
+        setFormData({
+          movieTitle: initialData.movieTitle || '',
+          scheduledDate: initialData.scheduledDate 
+            ? format(new Date(initialData.scheduledDate), 'yyyy-MM-dd')
+            : '',
+          startTime: initialData.startTime || '19:00:00',
+          notes: initialData.notes || '',
+          imageUrl: initialData.imageUrl || '',
+          genre: initialData.genre || ''
+        });
+        setIsManualEntry(false);
+        setShowSearch(false);
+        setTmdbSelectedTitle(initialData.movieTitle || null);
+      } else {
+        setFormData({
+          movieTitle: '',
+          scheduledDate: '',
+          startTime: '19:00:00',
+          notes: '',
+          imageUrl: '',
+          genre: ''
+        });
+        setIsManualEntry(false);
+        setShowSearch(true);
+        setTmdbSelectedTitle(null);
+      }
+      setErrors({});
+      setHasBlurred(false);
+      setShowDeleteConfirm(false);
     }
-    setErrors({});
-    setHasBlurred(false);
-    setShowDeleteConfirm(false);
-  }
-}, [isOpen, initialData]);
+  }, [isOpen, initialData]);
 
   const handleMovieSelect = (movieData) => {
     setFormData(prev => ({
@@ -72,11 +69,10 @@ useEffect(() => {
     setShowSearch(false);
     setIsManualEntry(false);
     setHasBlurred(false);
-    setTmdbSelectedTitle(movieData.title); // Remember the TMDB-selected title
+    setTmdbSelectedTitle(movieData.title);
   };
 
   const handleMovieTitleChange = (value) => {
-    // If user is modifying a TMDB-selected title, clear the auto-filled data
     if (tmdbSelectedTitle && value !== tmdbSelectedTitle) {
       setFormData(prev => ({
         ...prev,
@@ -85,7 +81,7 @@ useEffect(() => {
         imageUrl: '',
         genre: ''
       }));
-      setTmdbSelectedTitle(null); // Clear the tracking
+      setTmdbSelectedTitle(null);
       setIsManualEntry(true);
     } else {
       setFormData(prev => ({
@@ -212,9 +208,9 @@ useEffect(() => {
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="relative bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+          <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-900">
               {initialData ? 'Edit Movie Night' : 'Add Movie Night'}
             </h2>
@@ -226,164 +222,186 @@ useEffect(() => {
             </button>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="p-6">
-            {/* Movie Title Search */}
-            <div className="mb-4">
-              <MovieSearch 
-                onMovieSelect={handleMovieSelect}
-                movieTitle={formData.movieTitle}
-                onMovieTitleChange={handleMovieTitleChange}
-                onBlur={handleMovieTitleBlur}
-                showSearch={showSearch}
-                hasError={!!errors.movieTitle}
-              />
-              {errors.movieTitle && (
-                <p className="text-red-500 text-sm mt-1">{errors.movieTitle}</p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Date *
-              </label>
-              <input
-                type="date"
-                name="scheduledDate"
-                value={formData.scheduledDate}
-                onChange={handleChange}
-                min={today}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                  errors.scheduledDate ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.scheduledDate && (
-                <p className="text-red-500 text-sm mt-1">{errors.scheduledDate}</p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Start Time *
-              </label>
-              <input
-                type="time"
-                name="startTime"
-                value={formData.startTime}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                  errors.startTime ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.startTime && (
-                <p className="text-red-500 text-sm mt-1">{errors.startTime}</p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Genre
-              </label>
-              <input
-                type="text"
-                name="genre"
-                value={formData.genre}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Action, Comedy, Drama, etc."
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Notes
-              </label>
-              <textarea
-                name="notes"
-                value={formData.notes}
-                onChange={handleChange}
-                rows="3"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Any notes about the movie night..."
-              />
-            </div>
-
-            {/* Only show Image URL field for manual entries */}
-            {isManualEntry && (
-              <div className="mb-6">
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Poster Image URL
-                </label>
-                <input
-                  type="url"
-                  name="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    errors.imageUrl ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="https://example.com/movie-poster.jpg"
-                />
-                {errors.imageUrl && (
-                  <p className="text-red-500 text-sm mt-1">{errors.imageUrl}</p>
-                )}
-                {formData.imageUrl && (
-                  <img 
-                    src={formData.imageUrl} 
-                    alt="Preview" 
-                    className="mt-2 w-32 h-auto rounded shadow-md"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
+          {/* Content - Two Column Layout */}
+          <div className="flex-1 overflow-y-auto">
+            <form onSubmit={handleSubmit} className="flex">
+              {/* Left Column - Form Fields */}
+              <div className="flex-1 p-6 border-r">
+                {/* Movie Title Search */}
+                <div className="mb-4">
+                  <MovieSearch 
+                    onMovieSelect={handleMovieSelect}
+                    movieTitle={formData.movieTitle}
+                    onMovieTitleChange={handleMovieTitleChange}
+                    onBlur={handleMovieTitleBlur}
+                    showSearch={showSearch}
+                    hasError={!!errors.movieTitle}
                   />
+                  {errors.movieTitle && (
+                    <p className="text-red-500 text-sm mt-1">{errors.movieTitle}</p>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Date *
+                  </label>
+                  <input
+                    type="date"
+                    name="scheduledDate"
+                    value={formData.scheduledDate}
+                    onChange={handleChange}
+                    min={today}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                      errors.scheduledDate ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.scheduledDate && (
+                    <p className="text-red-500 text-sm mt-1">{errors.scheduledDate}</p>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Start Time *
+                  </label>
+                  <input
+                    type="time"
+                    name="startTime"
+                    value={formData.startTime}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                      errors.startTime ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {errors.startTime && (
+                    <p className="text-red-500 text-sm mt-1">{errors.startTime}</p>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Genre
+                  </label>
+                  <input
+                    type="text"
+                    name="genre"
+                    value={formData.genre}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Action, Comedy, Drama, etc."
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-semibold mb-2">
+                    Notes
+                  </label>
+                  <textarea
+                    name="notes"
+                    value={formData.notes}
+                    onChange={handleChange}
+                    rows="4"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Any notes about the movie night..."
+                  />
+                </div>
+
+                {/* Only show Image URL field for manual entries */}
+                {isManualEntry && (
+                  <div className="mb-4">
+                    <label className="block text-gray-700 font-semibold mb-2">
+                      Poster Image URL
+                    </label>
+                    <input
+                      type="url"
+                      name="imageUrl"
+                      value={formData.imageUrl}
+                      onChange={handleChange}
+                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                        errors.imageUrl ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                      placeholder="https://example.com/movie-poster.jpg"
+                    />
+                    {errors.imageUrl && (
+                      <p className="text-red-500 text-sm mt-1">{errors.imageUrl}</p>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
 
-            {/* Show poster preview for TMDB selections */}
-            {!isManualEntry && formData.imageUrl && (
-              <div className="mb-6">
-                <label className="block text-gray-700 font-semibold mb-2">
+              {/* Right Column - Poster Area */}
+              <div className="w-80 p-6 bg-gray-50 flex flex-col">
+                <label className="block text-gray-700 font-semibold mb-3">
                   Movie Poster
                 </label>
-                <img 
-                  src={formData.imageUrl} 
-                  alt="Movie Poster" 
-                  className="w-48 h-auto rounded shadow-md"
-                />
+                <div className="flex-1 flex items-start justify-center">
+                  {formData.imageUrl ? (
+                    <img 
+                      src={formData.imageUrl} 
+                      alt="Movie Poster" 
+                      className="max-w-full h-auto rounded-lg shadow-lg"
+                      onError={(e) => {
+                        e.target.src = '';
+                        e.target.alt = 'Failed to load image';
+                        e.target.className = 'w-full aspect-[2/3] bg-gray-200 rounded-lg flex items-center justify-center text-gray-400';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full aspect-[2/3] bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-300">
+                      <div className="text-center p-4">
+                        <svg 
+                          className="mx-auto h-12 w-12 text-gray-300 mb-2" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                          />
+                        </svg>
+                        <p className="text-sm">No poster</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
+            </form>
+          </div>
 
-            {/* Footer Buttons */}
-            <div className="flex gap-3 pt-4 border-t">
-              {initialData && onDelete && (
-                <button
-                  type="button"
-                  onClick={handleDeleteClick}
-                  className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition font-semibold"
-                  disabled={saving}
-                >
-                  Delete
-                </button>
-              )}
-              <div className="flex-1"></div>
+          {/* Footer Buttons */}
+          <div className="bg-white border-t px-6 py-4 flex gap-3">
+            {initialData && onDelete && (
               <button
                 type="button"
-                onClick={onClose}
-                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition font-semibold"
+                onClick={handleDeleteClick}
+                className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition font-semibold"
                 disabled={saving}
               >
-                Cancel
+                Delete
               </button>
-              <button
-                type="submit"
-                className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400"
-                disabled={saving}
-              >
-                {saving ? 'Saving...' : (initialData ? 'Update' : 'Create')}
-              </button>
-            </div>
-          </form>
+            )}
+            <div className="flex-1"></div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition font-semibold"
+              disabled={saving}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400"
+              disabled={saving}
+            >
+              {saving ? 'Saving...' : (initialData ? 'Update' : 'Create')}
+            </button>
+          </div>
 
           {/* Delete Confirmation Overlay */}
           {showDeleteConfirm && (
