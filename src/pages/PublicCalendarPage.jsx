@@ -13,7 +13,7 @@ function PublicCalendarPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [calendarData, setCalendarData] = useState(null);
-  const [viewModal, setViewModal] = useState({ isOpen: false, movieNight: null });
+  const [viewModal, setViewModal] = useState({ isOpen: false, movieNightId: null });
   const currentUser = authService.getCurrentUser();
 
   useEffect(() => {
@@ -40,15 +40,12 @@ function PublicCalendarPage() {
   };
 
   const handleMovieClick = (id) => {
-    const movie = calendarData.movieNights.find(m => m.id === id);
-    if (movie) {
-      if (calendarData.isOwnCalendar) {
-        // If viewing own calendar, redirect to home page to edit
-        navigate('/', { state: { editMovieId: id } });
-      } else {
-        // If viewing someone else's calendar, open view-only modal
-        setViewModal({ isOpen: true, movieNight: movie });
-      }
+    if (calendarData.isOwnCalendar) {
+      // If viewing own calendar, redirect to home page to edit
+      navigate('/', { state: { editMovieId: id } });
+    } else {
+      // If viewing someone else's calendar, open view-only modal
+      setViewModal({ isOpen: true, movieNightId: id });
     }
   };
 
@@ -147,8 +144,9 @@ function PublicCalendarPage() {
       {/* View-Only Modal */}
       <MovieNightViewModal
         isOpen={viewModal.isOpen}
-        onClose={() => setViewModal({ isOpen: false, movieNight: null })}
-        movieNight={viewModal.movieNight}
+        onClose={() => setViewModal({ isOpen: false, movieNightId: null })}
+        movieNightId={viewModal.movieNightId}
+        isOwner={calendarData?.isOwnCalendar}
       />
     </div>
   );

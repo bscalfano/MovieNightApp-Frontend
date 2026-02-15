@@ -9,6 +9,27 @@ const publicCalendarService = {
       headers: authService.getAuthHeader()
     });
     return response.data;
+  },
+
+  getMovieNightDetails: async (movieNightId) => {
+    const response = await axios.get(`${API_URL}/movie/${movieNightId}`, {
+      headers: authService.getAuthHeader()
+    });
+    return response.data;
+  },
+
+  attendMovieNight: async (movieNightId) => {
+    const response = await axios.post(`${API_URL}/movie/${movieNightId}/attend`, {}, {
+      headers: authService.getAuthHeader()
+    });
+    return response.data;
+  },
+
+  unattendMovieNight: async (movieNightId) => {
+    const response = await axios.delete(`${API_URL}/movie/${movieNightId}/attend`, {
+      headers: authService.getAuthHeader()
+    });
+    return response.data;
   }
 };
 
