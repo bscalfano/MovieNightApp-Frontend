@@ -1,49 +1,55 @@
 import axios from 'axios';
+import authService from './authService';
 
 const API_URL = 'https://localhost:7137/api/MovieNights'; // Update port if different
 
-// You can find your exact port by looking at the URL when you run your .NET app
-
 const movieNightService = {
-  // Get all movie nights
   getAll: async () => {
-    const response = await axios.get(API_URL);
+    const response = await axios.get(API_URL, {
+      headers: authService.getAuthHeader()
+    });
     return response.data;
   },
 
-  // Get upcoming movie nights
   getUpcoming: async () => {
-    const response = await axios.get(`${API_URL}/upcoming`);
+    const response = await axios.get(`${API_URL}/upcoming`, {
+      headers: authService.getAuthHeader()
+    });
     return response.data;
   },
 
-  // Get past movie nights
   getPast: async () => {
-    const response = await axios.get(`${API_URL}/past`);
+    const response = await axios.get(`${API_URL}/past`, {
+      headers: authService.getAuthHeader()
+    });
     return response.data;
   },
 
-  // Get single movie night
   getById: async (id) => {
-    const response = await axios.get(`${API_URL}/${id}`);
+    const response = await axios.get(`${API_URL}/${id}`, {
+      headers: authService.getAuthHeader()
+    });
     return response.data;
   },
 
-  // Create new movie night
   create: async (movieNight) => {
-    const response = await axios.post(API_URL, movieNight);
+    const response = await axios.post(API_URL, movieNight, {
+      headers: authService.getAuthHeader()
+    });
     return response.data;
   },
 
-  // Update movie night
   update: async (id, movieNight) => {
-    const response = await axios.put(`${API_URL}/${id}`, movieNight);
+    const response = await axios.put(`${API_URL}/${id}`, movieNight, {
+      headers: authService.getAuthHeader()
+    });
     return response.data;
   },
 
-  // Delete movie night
   delete: async (id) => {
-    await axios.delete(`${API_URL}/${id}`);
+    await axios.delete(`${API_URL}/${id}`, {
+      headers: authService.getAuthHeader()
+    });
   }
 };
 

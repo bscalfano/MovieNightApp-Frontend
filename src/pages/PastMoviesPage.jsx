@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import authService from '../services/authService';
 import toast from 'react-hot-toast';
 import movieNightService from '../services/movieNightService';
 import MovieNightCard from '../components/MovieNightCard';
@@ -10,22 +11,29 @@ function PastMoviesPage() {
   const [movieNights, setMovieNights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editModal, setEditModal] = useState({ isOpen: false, movieNight: null });
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadPastMovies();
   }, []);
 
   const loadPastMovies = async () => {
-    try {
-      const data = await movieNightService.getPast();
-      setMovieNights(data);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error loading past movies:', err);
+  try {
+    const data = await movieNightService.getPast();
+    setMovieNights(data);
+    setLoading(false);
+  } catch (err) {
+    console.error('Error loading past movies:', err);
+    if (err.response?.status === 401) {
+      toast.error('Session expired. Please log in again.');
+      authService.logout();
+      navigate('/login');
+    } else {
       toast.error('Failed to load past movies');
-      setLoading(false);
     }
-  };
+    setLoading(false);
+  }
+};
 
   const handleEditClick = async (id) => {
     try {

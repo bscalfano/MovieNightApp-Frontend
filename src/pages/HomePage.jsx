@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import movieNightService from '../services/movieNightService';
+import authService from '../services/authService';
 import MovieNightCard from '../components/MovieNightCard';
 import CalendarView from '../components/CalendarView';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MovieNightModal from '../components/MovieNightModal';
 
 function HomePage() {
+  const navigate = useNavigate();
   const [movieNights, setMovieNights] = useState([]);
   const [filteredMovieNights, setFilteredMovieNights] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +17,8 @@ function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [addModal, setAddModal] = useState(false);
   const [editModal, setEditModal] = useState({ isOpen: false, movieNight: null });
+
+  const user = authService.getCurrentUser();
 
   useEffect(() => {
     loadMovieNights();
@@ -40,9 +44,21 @@ function HomePage() {
       setLoading(false);
     } catch (err) {
       console.error('Error loading movie nights:', err);
-      toast.error('Failed to load movie nights');
+      if (err.response?.status === 401) {
+        toast.error('Session expired. Please log in again.');
+        authService.logout();
+        navigate('/login');
+      } else {
+        toast.error('Failed to load movie nights');
+      }
       setLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    authService.logout();
+    toast.success('Logged out successfully');
+    navigate('/login');
   };
 
   const handleAddClick = () => {
@@ -100,8 +116,21 @@ function HomePage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">Movie Night Calendar</h1>
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900">Movie Night Calendar</h1>
+            {user && (
+              <p className="text-gray-600 mt-1">
+                Welcome back, {user.firstName || user.email}!
+              </p>
+            )}
+          </div>
           <div className="flex gap-3">
+            <button
+              onClick={handleLogout}
+              className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition"
+            >
+              Logout
+            </button>
             <Link
               to="/past"
               className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition"
