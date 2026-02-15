@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { format12Hour } from '../utils/timeFormat';
 
 function MovieNightViewModal({ isOpen, onClose, movieNight }) {
   if (!isOpen || !movieNight) return null;
@@ -6,6 +7,7 @@ function MovieNightViewModal({ isOpen, onClose, movieNight }) {
   const formattedDate = movieNight.scheduledDate 
     ? format(new Date(movieNight.scheduledDate), 'EEEE, MMMM d, yyyy')
     : '';
+  const formattedTime = format12Hour(movieNight.startTime);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -55,7 +57,7 @@ function MovieNightViewModal({ isOpen, onClose, movieNight }) {
                       <label className="block text-sm font-medium text-gray-600 mb-1">
                         Start Time
                       </label>
-                      <p className="text-lg text-gray-900">{movieNight.startTime}</p>
+                      <p className="text-lg text-gray-900">{formattedTime}</p>
                     </div>
                   </div>
 

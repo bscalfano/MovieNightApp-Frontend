@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, startOfWeek, endOfWeek } from 'date-fns';
+import { format12Hour } from '../utils/timeFormat';
 
 function CalendarView({ movieNights, onEdit, onDateClick }) {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -74,30 +75,30 @@ function CalendarView({ movieNights, onEdit, onDateClick }) {
 
           return (
             <div
-            key={day.toISOString()}
-            onClick={(e) => handleDayClick(day, e)}
-            className={`min-h-24 border-2 rounded-lg p-2 transition cursor-pointer ${
-              !isCurrentMonth ? 'bg-gray-50 text-gray-400 border-gray-200' : 'bg-white border-gray-300'
-            } ${isToday ? 'ring-2 ring-indigo-500' : ''} hover:border-indigo-500`}
-          >
-            <div className="font-semibold text-sm mb-1">
-              {format(day, 'd')}
+              key={day.toISOString()}
+              onClick={(e) => handleDayClick(day, e)}
+              className={`min-h-24 border-2 rounded-lg p-2 transition cursor-pointer ${
+                !isCurrentMonth ? 'bg-gray-50 text-gray-400 border-gray-200' : 'bg-white border-gray-300'
+              } ${isToday ? 'ring-2 ring-indigo-500' : ''} hover:border-indigo-500`}
+            >
+              <div className="font-semibold text-sm mb-1">
+                {format(day, 'd')}
+              </div>
+              {moviesOnDay.map(movie => (
+                <button
+                  key={movie.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(movie.id);
+                  }}
+                  className="movie-card-button w-full bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 hover:bg-indigo-200 transition text-left"
+                  title={`Click to edit: ${movie.movieTitle}`}
+                >
+                  <div className="font-semibold truncate">{movie.movieTitle}</div>
+                  <div className="text-xs">{format12Hour(movie.startTime)}</div>
+                </button>
+              ))}
             </div>
-            {moviesOnDay.map(movie => (
-              <button
-                key={movie.id}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(movie.id);
-                }}
-                className="movie-card-button w-full bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 hover:bg-indigo-200 transition text-left"
-                title={`Click to edit: ${movie.movieTitle}`}
-              >
-                <div className="font-semibold truncate">{movie.movieTitle}</div>
-                <div className="text-xs">{movie.startTime}</div>
-              </button>
-            ))}
-          </div>
           );
         })}
       </div>

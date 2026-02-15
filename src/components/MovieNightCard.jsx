@@ -1,7 +1,9 @@
 import { format } from 'date-fns';
+import { format12Hour } from '../utils/timeFormat';
 
 function MovieNightCard({ movieNight, onEdit }) {
   const formattedDate = format(new Date(movieNight.scheduledDate), 'EEEE, MMMM d, yyyy');
+  const formattedTime = format12Hour(movieNight.startTime);
   
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
@@ -20,7 +22,7 @@ function MovieNightCard({ movieNight, onEdit }) {
           </span>
         )}
         <p className="text-gray-600 mb-1">📅 {formattedDate}</p>
-        <p className="text-gray-600 mb-3">🕐 {movieNight.startTime}</p>
+        <p className="text-gray-600 mb-3">🕐 {formattedTime}</p>
         {movieNight.notes && (
           <p className="text-gray-700 text-sm mb-4 italic line-clamp-3">"{movieNight.notes}"</p>
         )}
