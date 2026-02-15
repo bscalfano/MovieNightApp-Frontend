@@ -34,22 +34,22 @@ function ProfilePage() {
   }, []);
 
   const loadProfile = async () => {
-  try {
-    const data = await profileService.getProfile();
-    setProfile(data);
-    setProfileForm({
-      email: data.email,
-      firstName: data.firstName || '',
-      lastName: data.lastName || '',
-      profilePictureUrl: data.profilePictureUrl || ''
-    });
-    setLoading(false);
-  } catch (error) {
-    console.error('Error loading profile:', error);
-    toast.error('Failed to load profile');
-    setLoading(false);
-  }
-};
+    try {
+      const data = await profileService.getProfile();
+      setProfile(data);
+      setProfileForm({
+        email: data.email,
+        firstName: data.firstName || '',
+        lastName: data.lastName || '',
+        profilePictureUrl: data.profilePictureUrl || ''
+      });
+      setLoading(false);
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      toast.error('Failed to load profile');
+      setLoading(false);
+    }
+  };
 
   const handleProfileChange = (e) => {
     setProfileForm({
@@ -70,31 +70,31 @@ function ProfilePage() {
     setSaving(true);
 
     try {
-        await profileService.updateProfile(
+      await profileService.updateProfile(
         profileForm.email,
         profileForm.firstName,
         profileForm.lastName,
         profileForm.profilePictureUrl
-        );
-        toast.success('Profile updated successfully!');
-        
-        // Update stored user info
-        const currentUser = authService.getCurrentUser();
-        if (currentUser) {
+      );
+      toast.success('Profile updated successfully!');
+      
+      // Update stored user info
+      const currentUser = authService.getCurrentUser();
+      if (currentUser) {
         currentUser.email = profileForm.email;
         currentUser.firstName = profileForm.firstName;
         currentUser.lastName = profileForm.lastName;
         currentUser.profilePictureUrl = profileForm.profilePictureUrl;
         localStorage.setItem('user', JSON.stringify(currentUser));
-        }
-        
-        await loadProfile();
-        setEditMode(false);
-        setSaving(false);
+      }
+      
+      await loadProfile();
+      setEditMode(false);
+      setSaving(false);
     } catch (error) {
-        console.error('Error updating profile:', error);
-        toast.error(error.response?.data?.message || 'Failed to update profile');
-        setSaving(false);
+      console.error('Error updating profile:', error);
+      toast.error(error.response?.data?.message || 'Failed to update profile');
+      setSaving(false);
     }
   };
 
@@ -169,55 +169,69 @@ function ProfilePage() {
           {/* Stats */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex flex-col items-center mb-6">
-                <ProfilePicture
+              <ProfilePicture
                 src={profile.profilePictureUrl}
                 alt={profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : profile.email}
                 size="lg"
-                />
-                <h3 className="text-lg font-semibold text-gray-900 mt-4">
+              />
+              <h3 className="text-lg font-semibold text-gray-900 mt-4">
                 {profile.firstName && profile.lastName
-                    ? `${profile.firstName} ${profile.lastName}`
-                    : profile.email}
-                </h3>
+                  ? `${profile.firstName} ${profile.lastName}`
+                  : profile.email}
+              </h3>
             </div>
             <h4 className="text-md font-semibold text-gray-700 mb-4 border-t pt-4">Statistics</h4>
-            <div className="space-y-4">
-                <div>
+            <div className="space-y-3">
+              <Link
+                to="/"
+                className="block p-3 rounded-lg hover:bg-indigo-50 transition cursor-pointer"
+              >
                 <p className="text-sm text-gray-600">Total Movie Nights</p>
                 <p className="text-3xl font-bold text-indigo-600">{profile.totalMovieNights}</p>
-                </div>
-                <div>
+              </Link>
+              <Link
+                to="/"
+                className="block p-3 rounded-lg hover:bg-green-50 transition cursor-pointer"
+              >
                 <p className="text-sm text-gray-600">Upcoming</p>
                 <p className="text-3xl font-bold text-green-600">{profile.upcomingMovieNights}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Friends</p>
-                  <p className="text-3xl font-bold text-blue-600">{profile.friendsCount}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Pending Requests</p>
-                  <p className="text-3xl font-bold text-orange-600">{profile.pendingRequestsCount}</p>
-                </div>
-                <div>
+              </Link>
+              <Link
+                to="/friends"
+                state={{ defaultTab: 'friends', from: '/profile' }}
+                className="block p-3 rounded-lg hover:bg-blue-50 transition cursor-pointer"
+              >
+                <p className="text-sm text-gray-600">Friends</p>
+                <p className="text-3xl font-bold text-blue-600">{profile.friendsCount}</p>
+              </Link>
+              <Link
+                to="/friends"
+                state={{ defaultTab: 'requests', from: '/profile' }}
+                className="block p-3 rounded-lg hover:bg-orange-50 transition cursor-pointer"
+              >
+                <p className="text-sm text-gray-600">Pending Requests</p>
+                <p className="text-3xl font-bold text-orange-600">{profile.pendingRequestsCount}</p>
+              </Link>
+              <div className="p-3">
                 <p className="text-sm text-gray-600">Member Since</p>
                 <p className="text-sm font-semibold text-gray-900">
-                    {new Date(profile.createdAt).toLocaleDateString('en-US', {
+                  {new Date(profile.createdAt).toLocaleDateString('en-US', {
                     month: 'long',
                     year: 'numeric'
-                    })}
+                  })}
                 </p>
-                </div>
+              </div>
             </div>
-        </div>
-
-        <div className="mt-4 pt-4 border-t">
-            <Link
+            <div className="mt-4 pt-4 border-t">
+              <Link
                 to="/friends"
+                state={{ from: '/profile' }}
                 className="text-indigo-600 hover:text-indigo-800 font-semibold"
-            >
+              >
                 Find Friends →
-            </Link>
-        </div>
+              </Link>
+            </div>
+          </div>
 
           {/* Profile Info / Edit */}
           <div className="md:col-span-2 bg-white rounded-lg shadow-md p-6">
@@ -262,40 +276,40 @@ function ProfilePage() {
                   </div>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={profileForm.email}
-                        onChange={handleProfileChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={profileForm.email}
+                    onChange={handleProfileChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Profile Picture URL
+                  </label>
+                  <input
+                    type="url"
+                    name="profilePictureUrl"
+                    value={profileForm.profilePictureUrl}
+                    onChange={handleProfileChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="https://example.com/your-photo.jpg"
+                  />
+                  {profileForm.profilePictureUrl && (
+                    <div className="mt-2">
+                      <ProfilePicture
+                        src={profileForm.profilePictureUrl}
+                        alt="Preview"
+                        size="lg"
+                      />
                     </div>
-                    <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Profile Picture URL
-                    </label>
-                    <input
-                        type="url"
-                        name="profilePictureUrl"
-                        value={profileForm.profilePictureUrl}
-                        onChange={handleProfileChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        placeholder="https://example.com/your-photo.jpg"
-                    />
-                    {profileForm.profilePictureUrl && (
-                        <div className="mt-2">
-                        <ProfilePicture
-                            src={profileForm.profilePictureUrl}
-                            alt="Preview"
-                            size="lg"
-                        />
-                        </div>
-                    )}
-                    </div>
+                  )}
+                </div>
                 <div className="flex gap-3">
                   <button
                     type="submit"
@@ -311,7 +325,8 @@ function ProfilePage() {
                       setProfileForm({
                         email: profile.email,
                         firstName: profile.firstName || '',
-                        lastName: profile.lastName || ''
+                        lastName: profile.lastName || '',
+                        profilePictureUrl: profile.profilePictureUrl || ''
                       });
                     }}
                     disabled={saving}

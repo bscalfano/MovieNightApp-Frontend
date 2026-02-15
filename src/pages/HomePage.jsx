@@ -7,7 +7,6 @@ import MovieNightCard from '../components/MovieNightCard';
 import CalendarView from '../components/CalendarView';
 import LoadingSpinner from '../components/LoadingSpinner';
 import MovieNightModal from '../components/MovieNightModal';
-import ProfilePicture from '../components/ProfilePicture';
 import ProfileDropdown from '../components/ProfileDropdown';
 
 function HomePage() {
@@ -68,6 +67,11 @@ function HomePage() {
     setAddModal(true);
   };
 
+  const handleDateClick = (date) => {
+    setAddModal(true);
+    setSelectedDate(date);
+  };
+
   const handleAddSave = async (formData) => {
     try {
       await movieNightService.create(formData);
@@ -110,11 +114,6 @@ function HomePage() {
     }
   };
 
-  const handleDateClick = (date) => {
-    setAddModal(true);
-    setSelectedDate(date);
-  };
-
   if (loading) {
     return <LoadingSpinner message="Loading movie nights..." />;
   }
@@ -136,25 +135,26 @@ function HomePage() {
             </div>
             {/* Action Buttons */}
             <div className="flex gap-3 items-center">
-            <Link
+              <Link
+                to="/friends"
+                state={{ from: '/' }}
+                className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition whitespace-nowrap"
+              >
+                Find Friends
+              </Link>
+              <Link
                 to="/past"
                 className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition whitespace-nowrap"
-            >
+              >
                 View Past Movies
-            </Link>
-            <Link
-                to="/friends"
-                className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition whitespace-nowrap"
-                >
-                Find Friends
-            </Link>
-            <button
+              </Link>
+              <button
                 onClick={handleAddClick}
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition whitespace-nowrap"
-            >
+              >
                 + Add Movie Night
-            </button>
-            <ProfileDropdown user={user} onLogout={handleLogout} />
+              </button>
+              <ProfileDropdown user={user} onLogout={handleLogout} />
             </div>
           </div>
 
@@ -194,8 +194,8 @@ function HomePage() {
           </div>
         </div>
 
-            {/* Content */}
-            {filteredMovieNights.length === 0 && searchTerm ? (
+        {/* Content */}
+        {filteredMovieNights.length === 0 && searchTerm ? (
           <div className="text-center py-12">
             <p className="text-xl text-gray-600 mb-4">No movies found matching "{searchTerm}"</p>
             <button
@@ -235,15 +235,15 @@ function HomePage() {
       </div>
 
       {/* Add Movie Night Modal */}
-        <MovieNightModal
+      <MovieNightModal
         isOpen={addModal}
         onClose={() => {
-            setAddModal(false);
-            setSelectedDate(null);
+          setAddModal(false);
+          setSelectedDate(null);
         }}
         onSave={handleAddSave}
         initialDate={selectedDate}
-        />
+      />
 
       {/* Edit Movie Night Modal */}
       <MovieNightModal

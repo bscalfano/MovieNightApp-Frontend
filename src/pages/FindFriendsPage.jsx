@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import friendsService from '../services/friendsService';
 import ProfilePicture from '../components/ProfilePicture';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 function FindFriendsPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [friends, setFriends] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
-  const [activeTab, setActiveTab] = useState('search'); // 'search', 'friends', 'requests'
+  const [activeTab, setActiveTab] = useState(location.state?.defaultTab || 'search');
+
+  // Determine back link based on where user came from
+  const backLink = location.state?.from || '/';
+  const backText = location.state?.from === '/profile' ? '← Back to Profile' : '← Back to Calendar';
 
   useEffect(() => {
     loadFriendData();
@@ -266,9 +272,12 @@ function FindFriendsPage() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link to="/" className="text-indigo-600 hover:text-indigo-800 mb-2 inline-block">
-            ← Back to Calendar
-          </Link>
+          <button
+            onClick={() => navigate(backLink)}
+            className="text-indigo-600 hover:text-indigo-800 mb-2 inline-block"
+          >
+            {backText}
+          </button>
           <h1 className="text-4xl font-bold text-gray-900">Friends</h1>
         </div>
 
