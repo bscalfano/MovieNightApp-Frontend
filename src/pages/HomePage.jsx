@@ -113,76 +113,86 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900">Movie Night Calendar</h1>
-            {user && (
-              <p className="text-gray-600 mt-1">
-                Welcome back, {user.firstName || user.email}!
-              </p>
-            )}
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={handleLogout}
-              className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition"
-            >
-              Logout
-            </button>
-            <Link
-              to="/past"
-              className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition"
-            >
-              View Past Movies
-            </Link>
-            <button
-              onClick={handleAddClick}
-              className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition"
-            >
-              + Add Movie Night
-            </button>
-          </div>
-        </div>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+            {/* Header */}
+            <div className="mb-8">
+            {/* Title and Welcome */}
+            <div className="flex justify-between items-start mb-4">
+                <div>
+                <h1 className="text-4xl font-bold text-gray-900">Movie Night Calendar</h1>
+                {user && (
+                    <p className="text-gray-600 mt-1">
+                    Welcome back, {user.firstName || user.email}!
+                    </p>
+                )}
+                </div>
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                <Link
+                    to="/profile"
+                    className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition whitespace-nowrap"
+                >
+                    Profile
+                </Link>
+                <button
+                    onClick={handleLogout}
+                    className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition whitespace-nowrap"
+                >
+                    Logout
+                </button>
+                <Link
+                    to="/past"
+                    className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition whitespace-nowrap"
+                >
+                    View Past Movies
+                </Link>
+                <button
+                    onClick={handleAddClick}
+                    className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition whitespace-nowrap"
+                >
+                    + Add Movie Night
+                </button>
+                </div>
+            </div>
 
-        {/* Search Bar */}
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search movies..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-        </div>
+            {/* Search Bar */}
+            <div className="mb-4">
+                <input
+                type="text"
+                placeholder="Search movies..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+            </div>
 
-        {/* View Toggle */}
-        <div className="flex gap-2 mb-6">
-          <button
-            onClick={() => setView('calendar')}
-            className={`px-4 py-2 rounded-lg ${
-              view === 'calendar'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-white text-gray-700 border border-gray-300'
-            }`}
-          >
-            Calendar View
-          </button>
-          <button
-            onClick={() => setView('list')}
-            className={`px-4 py-2 rounded-lg ${
-              view === 'list'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-white text-gray-700 border border-gray-300'
-            }`}
-          >
-            List View
-          </button>
-        </div>
+            {/* View Toggle */}
+            <div className="flex gap-2">
+                <button
+                onClick={() => setView('calendar')}
+                className={`px-4 py-2 rounded-lg ${
+                    view === 'calendar'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-white text-gray-700 border border-gray-300'
+                }`}
+                >
+                Calendar View
+                </button>
+                <button
+                onClick={() => setView('list')}
+                className={`px-4 py-2 rounded-lg ${
+                    view === 'list'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-white text-gray-700 border border-gray-300'
+                }`}
+                >
+                List View
+                </button>
+            </div>
+            </div>
 
-        {/* Content */}
-        {filteredMovieNights.length === 0 && searchTerm ? (
+            {/* Content */}
+            {filteredMovieNights.length === 0 && searchTerm ? (
           <div className="text-center py-12">
             <p className="text-xl text-gray-600 mb-4">No movies found matching "{searchTerm}"</p>
             <button
