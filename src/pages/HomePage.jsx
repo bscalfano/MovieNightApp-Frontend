@@ -17,7 +17,7 @@ function HomePage() {
   const [view, setView] = useState('calendar');
   const [searchTerm, setSearchTerm] = useState('');
   const [addModal, setAddModal] = useState(false);
-  const [editModal, setEditModal] = useState({ isOpen: false, movieNight: null });
+  const [editModal, setEditModal] = useState({ isOpen: false, movieNight: null, attendees: [] });
   const [selectedDate, setSelectedDate] = useState(null);
 
   const user = authService.getCurrentUser();
@@ -83,13 +83,18 @@ function HomePage() {
   };
 
   const handleEditClick = async (id) => {
-    try {
-      const movieNight = await movieNightService.getById(id);
-      setEditModal({ isOpen: true, movieNight });
-    } catch (error) {
-      toast.error('Failed to load movie night');
-    }
-  };
+  try {
+    const response = await movieNightService.getById(id);
+    // Response now contains { movieNight, attendees }
+    setEditModal({ 
+      isOpen: true, 
+      movieNight: response.movieNight || response, // Handle both old and new format
+      attendees: response.attendees || [] 
+    });
+  } catch (error) {
+    toast.error('Failed to load movie night');
+  }
+};
 
   const handleEditSave = async (formData) => {
     try {
@@ -248,10 +253,11 @@ function HomePage() {
       {/* Edit Movie Night Modal */}
       <MovieNightModal
         isOpen={editModal.isOpen}
-        onClose={() => setEditModal({ isOpen: false, movieNight: null })}
+        onClose={() => setEditModal({ isOpen: false, movieNight: null, attendees: [] })}
         onSave={handleEditSave}
         onDelete={handleDelete}
         initialData={editModal.movieNight}
+        attendees={editModal.attendees}
       />
     </div>
   );

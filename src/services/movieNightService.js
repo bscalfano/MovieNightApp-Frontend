@@ -1,7 +1,7 @@
 import axios from 'axios';
 import authService from './authService';
 
-const API_URL = 'https://localhost:7137/api/MovieNights'; // Update port if different
+const API_URL = 'https://localhost:7137/api/MovieNights';
 
 const movieNightService = {
   getAll: async () => {

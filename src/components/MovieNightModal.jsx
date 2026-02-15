@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import MovieSearch from './MovieSearch';
+import ProfilePicture from './ProfilePicture';
 
-function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null, initialDate = null }) {
+function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null, initialDate = null, attendees = [] }) {
   const [errors, setErrors] = useState({});
   const [showSearch, setShowSearch] = useState(true);
   const [isManualEntry, setIsManualEntry] = useState(false);
@@ -23,40 +24,41 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
     genre: ''
   });
 
+  // Reset form when modal opens/closes or initialData changes
   useEffect(() => {
-  if (isOpen) {
-    if (initialData) {
-      setFormData({
-        movieTitle: initialData.movieTitle || '',
-        scheduledDate: initialData.scheduledDate 
-          ? format(new Date(initialData.scheduledDate), 'yyyy-MM-dd')
-          : '',
-        startTime: initialData.startTime || '19:00:00',
-        notes: initialData.notes || '',
-        imageUrl: initialData.imageUrl || '',
-        genre: initialData.genre || ''
-      });
-      setIsManualEntry(false);
-      setShowSearch(false);
-      setTmdbSelectedTitle(initialData.movieTitle || null);
-    } else {
-      setFormData({
-        movieTitle: '',
-        scheduledDate: initialDate ? format(initialDate, 'yyyy-MM-dd') : '',
-        startTime: '19:00:00',
-        notes: '',
-        imageUrl: '',
-        genre: ''
-      });
-      setIsManualEntry(false);
-      setShowSearch(true);
-      setTmdbSelectedTitle(null);
+    if (isOpen) {
+      if (initialData) {
+        setFormData({
+          movieTitle: initialData.movieTitle || '',
+          scheduledDate: initialData.scheduledDate 
+            ? format(new Date(initialData.scheduledDate), 'yyyy-MM-dd')
+            : '',
+          startTime: initialData.startTime || '19:00:00',
+          notes: initialData.notes || '',
+          imageUrl: initialData.imageUrl || '',
+          genre: initialData.genre || ''
+        });
+        setIsManualEntry(false);
+        setShowSearch(false);
+        setTmdbSelectedTitle(initialData.movieTitle || null);
+      } else {
+        setFormData({
+          movieTitle: '',
+          scheduledDate: initialDate ? format(initialDate, 'yyyy-MM-dd') : '',
+          startTime: '19:00:00',
+          notes: '',
+          imageUrl: '',
+          genre: ''
+        });
+        setIsManualEntry(false);
+        setShowSearch(true);
+        setTmdbSelectedTitle(null);
+      }
+      setErrors({});
+      setHasBlurred(false);
+      setShowDeleteConfirm(false);
     }
-    setErrors({});
-    setHasBlurred(false);
-    setShowDeleteConfirm(false);
-  }
-}, [isOpen, initialData, initialDate]);
+  }, [isOpen, initialData, initialDate]);
 
   const handleMovieSelect = (movieData) => {
     setFormData(prev => ({
@@ -301,11 +303,40 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                     name="notes"
                     value={formData.notes}
                     onChange={handleChange}
-                    rows="4"
+                    rows="3"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     placeholder="Any notes about the movie night..."
                   />
                 </div>
+
+                {/* Attendees - Only show when editing */}
+                {initialData && attendees && attendees.length > 0 && (
+                  <div className="mb-4 pt-4 border-t">
+                    <label className="block text-gray-700 font-semibold mb-3">
+                      Attendees ({attendees.length})
+                    </label>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {attendees.map(attendee => (
+                        <div key={attendee.userId} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+                          <ProfilePicture
+                            src={attendee.profilePictureUrl}
+                            alt={attendee.firstName && attendee.lastName 
+                              ? `${attendee.firstName} ${attendee.lastName}` 
+                              : attendee.email}
+                            size="sm"
+                          />
+                          <div>
+                            <p className="font-semibold text-gray-900 text-sm">
+                              {attendee.firstName && attendee.lastName
+                                ? `${attendee.firstName} ${attendee.lastName}`
+                                : attendee.email}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Only show Image URL field for manual entries */}
                 {isManualEntry && (
@@ -342,9 +373,7 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                       alt="Movie Poster" 
                       className="max-w-full h-auto rounded-lg shadow-lg"
                       onError={(e) => {
-                        e.target.src = '';
-                        e.target.alt = 'Failed to load image';
-                        e.target.className = 'w-full aspect-[2/3] bg-gray-200 rounded-lg flex items-center justify-center text-gray-400';
+                        e.target.style.display = 'none';
                       }}
                     />
                   ) : (
