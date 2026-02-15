@@ -25,9 +25,12 @@ function CalendarView({ movieNights, onEdit, onDateClick }) {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  const handleDayClick = (day, moviesOnDay) => {
-    // If there are no movies on this day, open add modal with this date
-    if (moviesOnDay.length === 0 && onDateClick) {
+  const handleDayClick = (day, e) => {
+    // Only trigger if clicking on the day cell itself, not on movie buttons
+    if (e.target.closest('.movie-card-button')) {
+      return;
+    }
+    if (onDateClick) {
       onDateClick(day);
     }
   };
@@ -68,36 +71,33 @@ function CalendarView({ movieNights, onEdit, onDateClick }) {
           const moviesOnDay = getMoviesForDay(day);
           const isCurrentMonth = day.getMonth() === currentDate.getMonth();
           const isToday = isSameDay(day, new Date());
-          const hasMovies = moviesOnDay.length > 0;
 
           return (
             <div
-              key={day.toISOString()}
-              onClick={() => handleDayClick(day, moviesOnDay)}
-              className={`min-h-24 border rounded-lg p-2 transition ${
-                !isCurrentMonth ? 'bg-gray-50 text-gray-400' : 'bg-white'
-              } ${isToday ? 'ring-2 ring-indigo-500' : ''} ${
-                !hasMovies ? 'hover:border-indigo-500 hover:border-2 cursor-pointer' : ''
-              }`}
-            >
-              <div className="font-semibold text-sm mb-1">
-                {format(day, 'd')}
-              </div>
-              {moviesOnDay.map(movie => (
-                <button
-                  key={movie.id}
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent day click when clicking movie
-                    onEdit(movie.id);
-                  }}
-                  className="w-full bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 hover:bg-indigo-200 transition cursor-pointer text-left"
-                  title={`Click to edit: ${movie.movieTitle}`}
-                >
-                  <div className="font-semibold truncate">{movie.movieTitle}</div>
-                  <div className="text-xs">{movie.startTime}</div>
-                </button>
-              ))}
+            key={day.toISOString()}
+            onClick={(e) => handleDayClick(day, e)}
+            className={`min-h-24 border-2 rounded-lg p-2 transition cursor-pointer ${
+              !isCurrentMonth ? 'bg-gray-50 text-gray-400 border-gray-200' : 'bg-white border-gray-300'
+            } ${isToday ? 'ring-2 ring-indigo-500' : ''} hover:border-indigo-500`}
+          >
+            <div className="font-semibold text-sm mb-1">
+              {format(day, 'd')}
             </div>
+            {moviesOnDay.map(movie => (
+              <button
+                key={movie.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(movie.id);
+                }}
+                className="movie-card-button w-full bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 hover:bg-indigo-200 transition text-left"
+                title={`Click to edit: ${movie.movieTitle}`}
+              >
+                <div className="font-semibold truncate">{movie.movieTitle}</div>
+                <div className="text-xs">{movie.startTime}</div>
+              </button>
+            ))}
+          </div>
           );
         })}
       </div>
