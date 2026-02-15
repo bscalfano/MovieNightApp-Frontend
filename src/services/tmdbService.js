@@ -16,7 +16,11 @@ const tmdbService = {
           page: 1
         }
       });
-      return response.data.results;
+      
+      // Sort results by popularity (descending)
+      const sortedResults = response.data.results.sort((a, b) => b.popularity - a.popularity);
+      
+      return sortedResults;
     } catch (error) {
       console.error('Error searching movies:', error);
       throw error;
