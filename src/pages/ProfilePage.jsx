@@ -191,12 +191,12 @@ function ProfilePage() {
                 <p className="text-3xl font-bold text-green-600">{profile.upcomingMovieNights}</p>
                 </div>
                 <div>
-                <p className="text-sm text-gray-600">Followers</p>
-                <p className="text-3xl font-bold text-blue-600">{profile.followersCount}</p>
+                  <p className="text-sm text-gray-600">Friends</p>
+                  <p className="text-3xl font-bold text-blue-600">{profile.friendsCount}</p>
                 </div>
                 <div>
-                <p className="text-sm text-gray-600">Following</p>
-                <p className="text-3xl font-bold text-purple-600">{profile.followingCount}</p>
+                  <p className="text-sm text-gray-600">Pending Requests</p>
+                  <p className="text-3xl font-bold text-orange-600">{profile.pendingRequestsCount}</p>
                 </div>
                 <div>
                 <p className="text-sm text-gray-600">Member Since</p>

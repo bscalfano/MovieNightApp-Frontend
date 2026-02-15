@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import followService from '../services/followService';
+import friendsService from '../services/friendsService';
 import ProfilePicture from '../components/ProfilePicture';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 function FindFriendsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [followers, setFollowers] = useState([]);
-  const [following, setFollowing] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
-  const [activeTab, setActiveTab] = useState('search'); // 'search', 'followers', 'following'
+  const [activeTab, setActiveTab] = useState('search'); // 'search', 'friends', 'requests'
 
   useEffect(() => {
-    loadFollowData();
+    loadFriendData();
   }, []);
 
   useEffect(() => {
@@ -30,18 +30,18 @@ function FindFriendsPage() {
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
-  const loadFollowData = async () => {
+  const loadFriendData = async () => {
     try {
-      const [followersData, followingData] = await Promise.all([
-        followService.getFollowers(),
-        followService.getFollowing()
+      const [friendsData, requestsData] = await Promise.all([
+        friendsService.getFriends(),
+        friendsService.getPendingRequests()
       ]);
-      setFollowers(followersData);
-      setFollowing(followingData);
+      setFriends(friendsData);
+      setPendingRequests(requestsData);
       setLoading(false);
     } catch (error) {
-      console.error('Error loading follow data:', error);
-      toast.error('Failed to load follow data');
+      console.error('Error loading friend data:', error);
+      toast.error('Failed to load friend data');
       setLoading(false);
     }
   };
@@ -49,7 +49,7 @@ function FindFriendsPage() {
   const searchUsers = async () => {
     setSearching(true);
     try {
-      const results = await followService.searchUsers(searchQuery);
+      const results = await friendsService.searchUsers(searchQuery);
       setSearchResults(results);
       setSearching(false);
     } catch (error) {
@@ -59,44 +59,113 @@ function FindFriendsPage() {
     }
   };
 
-  const handleFollow = async (userId) => {
+  const handleSendRequest = async (userId) => {
     try {
-      await followService.followUser(userId);
-      toast.success('Followed user!');
+      await friendsService.sendFriendRequest(userId);
+      toast.success('Friend request sent!');
       
       // Update local state
       setSearchResults(prev => prev.map(user => 
-        user.id === userId ? { ...user, isFollowing: true } : user
+        user.id === userId ? { ...user, friendshipStatus: 'pending_sent' } : user
       ));
-      setFollowers(prev => prev.map(user => 
-        user.id === userId ? { ...user, isFollowing: true } : user
-      ));
-      
-      // Reload following list
-      const followingData = await followService.getFollowing();
-      setFollowing(followingData);
     } catch (error) {
-      console.error('Error following user:', error);
-      toast.error('Failed to follow user');
+      console.error('Error sending friend request:', error);
+      toast.error(error.response?.data || 'Failed to send friend request');
     }
   };
 
-  const handleUnfollow = async (userId) => {
+  const handleCancelRequest = async (userId) => {
     try {
-      await followService.unfollowUser(userId);
-      toast.success('Unfollowed user');
+      await friendsService.cancelFriendRequest(userId);
+      toast.success('Friend request cancelled');
       
       // Update local state
       setSearchResults(prev => prev.map(user => 
-        user.id === userId ? { ...user, isFollowing: false } : user
+        user.id === userId ? { ...user, friendshipStatus: 'none' } : user
       ));
-      setFollowers(prev => prev.map(user => 
-        user.id === userId ? { ...user, isFollowing: false } : user
-      ));
-      setFollowing(prev => prev.filter(user => user.id !== userId));
     } catch (error) {
-      console.error('Error unfollowing user:', error);
-      toast.error('Failed to unfollow user');
+      console.error('Error cancelling friend request:', error);
+      toast.error('Failed to cancel friend request');
+    }
+  };
+
+  const handleAcceptRequest = async (requestId) => {
+    try {
+      await friendsService.acceptFriendRequest(requestId);
+      toast.success('Friend request accepted!');
+      await loadFriendData();
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+      toast.error('Failed to accept friend request');
+    }
+  };
+
+  const handleRejectRequest = async (requestId) => {
+    try {
+      await friendsService.rejectFriendRequest(requestId);
+      toast.success('Friend request rejected');
+      await loadFriendData();
+    } catch (error) {
+      console.error('Error rejecting friend request:', error);
+      toast.error('Failed to reject friend request');
+    }
+  };
+
+  const handleRemoveFriend = async (userId) => {
+    if (!window.confirm('Are you sure you want to remove this friend?')) {
+      return;
+    }
+
+    try {
+      await friendsService.removeFriend(userId);
+      toast.success('Friend removed');
+      await loadFriendData();
+      
+      // Update search results if present
+      setSearchResults(prev => prev.map(user => 
+        user.id === userId ? { ...user, friendshipStatus: 'none' } : user
+      ));
+    } catch (error) {
+      console.error('Error removing friend:', error);
+      toast.error('Failed to remove friend');
+    }
+  };
+
+  const renderActionButton = (user) => {
+    switch (user.friendshipStatus) {
+      case 'friends':
+        return (
+          <button
+            onClick={() => handleRemoveFriend(user.id)}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+          >
+            Remove Friend
+          </button>
+        );
+      case 'pending_sent':
+        return (
+          <button
+            onClick={() => handleCancelRequest(user.id)}
+            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-semibold"
+          >
+            Cancel Request
+          </button>
+        );
+      case 'pending_received':
+        return (
+          <span className="text-sm text-gray-600">
+            (Sent you a request)
+          </span>
+        );
+      default:
+        return (
+          <button
+            onClick={() => handleSendRequest(user.id)}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-semibold"
+          >
+            Add Friend
+          </button>
+        );
     }
   };
 
@@ -128,21 +197,60 @@ function FindFriendsPage() {
                 <p className="text-sm text-gray-600">{user.email}</p>
               </div>
             </div>
-            {user.isFollowing ? (
+            {renderActionButton(user)}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderPendingRequests = () => {
+    if (pendingRequests.length === 0) {
+      return (
+        <div className="text-center py-12 text-gray-600">
+          No pending friend requests
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-3">
+        {pendingRequests.map(request => (
+          <div key={request.id} className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition">
+            <div className="flex items-center gap-3">
+              <ProfilePicture
+                src={request.senderProfilePictureUrl}
+                alt={request.senderFirstName && request.senderLastName 
+                  ? `${request.senderFirstName} ${request.senderLastName}` 
+                  : request.senderEmail}
+                size="md"
+              />
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {request.senderFirstName && request.senderLastName
+                    ? `${request.senderFirstName} ${request.senderLastName}`
+                    : request.senderEmail}
+                </p>
+                <p className="text-sm text-gray-600">{request.senderEmail}</p>
+                <p className="text-xs text-gray-500">
+                  {new Date(request.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
               <button
-                onClick={() => handleUnfollow(user.id)}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-semibold"
+                onClick={() => handleAcceptRequest(request.id)}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
               >
-                Following
+                Accept
               </button>
-            ) : (
               <button
-                onClick={() => handleFollow(user.id)}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-semibold"
+                onClick={() => handleRejectRequest(request.id)}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
               >
-                Follow
+                Reject
               </button>
-            )}
+            </div>
           </div>
         ))}
       </div>
@@ -161,7 +269,7 @@ function FindFriendsPage() {
           <Link to="/" className="text-indigo-600 hover:text-indigo-800 mb-2 inline-block">
             ← Back to Calendar
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900">Find Friends</h1>
+          <h1 className="text-4xl font-bold text-gray-900">Friends</h1>
         </div>
 
         {/* Tabs */}
@@ -177,24 +285,29 @@ function FindFriendsPage() {
             Search
           </button>
           <button
-            onClick={() => setActiveTab('followers')}
+            onClick={() => setActiveTab('friends')}
             className={`px-4 py-2 font-semibold transition ${
-              activeTab === 'followers'
+              activeTab === 'friends'
                 ? 'text-indigo-600 border-b-2 border-indigo-600'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Followers ({followers.length})
+            Friends ({friends.length})
           </button>
           <button
-            onClick={() => setActiveTab('following')}
-            className={`px-4 py-2 font-semibold transition ${
-              activeTab === 'following'
+            onClick={() => setActiveTab('requests')}
+            className={`px-4 py-2 font-semibold transition relative ${
+              activeTab === 'requests'
                 ? 'text-indigo-600 border-b-2 border-indigo-600'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            Following ({following.length})
+            Requests ({pendingRequests.length})
+            {pendingRequests.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {pendingRequests.length}
+              </span>
+            )}
           </button>
         </div>
 
@@ -226,8 +339,8 @@ function FindFriendsPage() {
           </div>
         )}
 
-        {activeTab === 'followers' && renderUserList(followers)}
-        {activeTab === 'following' && renderUserList(following)}
+        {activeTab === 'friends' && renderUserList(friends)}
+        {activeTab === 'requests' && renderPendingRequests()}
       </div>
     </div>
   );
