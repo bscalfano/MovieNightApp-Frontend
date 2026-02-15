@@ -26,6 +26,13 @@ const friendsService = {
     return response.data;
   },
 
+  getUserFriends: async (userId) => {
+    const response = await axios.get(`${API_URL}/user/${userId}`, {
+      headers: authService.getAuthHeader()
+    });
+    return response.data;
+  },
+
   getPendingRequests: async () => {
     const response = await axios.get(`${API_URL}/requests`, {
       headers: authService.getAuthHeader()

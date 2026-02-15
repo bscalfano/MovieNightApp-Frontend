@@ -7,6 +7,8 @@ import CalendarView from '../components/CalendarView';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ProfilePicture from '../components/ProfilePicture';
 import MovieNightViewModal from '../components/MovieNightViewModal';
+import { format } from 'date-fns';
+import { format12Hour } from '../utils/timeFormat';
 
 function PublicCalendarPage() {
   const { userId } = useParams();
@@ -14,6 +16,7 @@ function PublicCalendarPage() {
   const [loading, setLoading] = useState(true);
   const [calendarData, setCalendarData] = useState(null);
   const [viewModal, setViewModal] = useState({ isOpen: false, movieNightId: null });
+  const [view, setView] = useState('calendar'); // 'calendar' or 'list'
   const currentUser = authService.getCurrentUser();
 
   useEffect(() => {
@@ -66,7 +69,7 @@ function PublicCalendarPage() {
     return null;
   }
 
-  const { user, movieNights, totalMovieNights, isOwnCalendar } = calendarData;
+  const { user, movieNights, totalMovieNights, friendsCount, isOwnCalendar } = calendarData;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -96,14 +99,20 @@ function PublicCalendarPage() {
                   : user.email}
               </p>
               <div className="flex gap-6 mt-4">
-                <div>
-                  <p className="text-sm text-gray-600">Total Movie Nights</p>
-                  <p className="text-2xl font-bold text-indigo-600">{totalMovieNights}</p>
-                </div>
-                <div>
+                <button
+                  onClick={() => setView('list')}
+                  className="text-center hover:bg-gray-50 rounded-lg p-2 transition"
+                >
                   <p className="text-sm text-gray-600">Upcoming</p>
                   <p className="text-2xl font-bold text-green-600">{movieNights.length}</p>
-                </div>
+                </button>
+                <button
+                  onClick={() => navigate(`/user/${userId}/friends`)}
+                  className="text-center hover:bg-gray-50 rounded-lg p-2 transition"
+                >
+                  <p className="text-sm text-gray-600">Friends</p>
+                  <p className="text-2xl font-bold text-blue-600">{friendsCount || 0}</p>
+                </button>
               </div>
             </div>
             {isOwnCalendar && (
@@ -117,7 +126,33 @@ function PublicCalendarPage() {
           </div>
         </div>
 
-        {/* Calendar */}
+        {/* View Toggle */}
+        {movieNights.length > 0 && (
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => setView('calendar')}
+              className={`px-4 py-2 rounded-lg ${
+                view === 'calendar'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-gray-700 border border-gray-300'
+              }`}
+            >
+              Calendar View
+            </button>
+            <button
+              onClick={() => setView('list')}
+              className={`px-4 py-2 rounded-lg ${
+                view === 'list'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-gray-700 border border-gray-300'
+              }`}
+            >
+              List View
+            </button>
+          </div>
+        )}
+
+        {/* Content */}
         {movieNights.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg shadow-md">
             <p className="text-xl text-gray-600 mb-4">
@@ -132,12 +167,47 @@ function PublicCalendarPage() {
               </Link>
             )}
           </div>
-        ) : (
+        ) : view === 'calendar' ? (
           <CalendarView 
             movieNights={movieNights} 
             onEdit={handleMovieClick}
             onDateClick={handleDateClick}
           />
+        ) : (
+          <div className="space-y-4">
+            {movieNights.map((movie) => (
+              <div
+                key={movie.id}
+                onClick={() => handleMovieClick(movie.id)}
+                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer flex gap-6"
+              >
+                {movie.imageUrl && (
+                  <img
+                    src={movie.imageUrl}
+                    alt={movie.movieTitle}
+                    className="w-32 h-48 object-cover rounded-lg"
+                  />
+                )}
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{movie.movieTitle}</h3>
+                  {movie.genre && (
+                    <span className="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded mb-2">
+                      {movie.genre}
+                    </span>
+                  )}
+                  <p className="text-gray-600 mb-1">
+                    📅 {format(new Date(movie.scheduledDate), 'EEEE, MMMM d, yyyy')}
+                  </p>
+                  <p className="text-gray-600 mb-3">
+                    🕐 {format12Hour(movie.startTime)}
+                  </p>
+                  {movie.notes && (
+                    <p className="text-gray-700 text-sm italic">"{movie.notes}"</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
