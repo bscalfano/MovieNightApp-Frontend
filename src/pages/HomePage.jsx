@@ -142,6 +142,12 @@ function HomePage() {
             >
                 View Past Movies
             </Link>
+            <Link
+                to="/friends"
+                className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition whitespace-nowrap"
+                >
+                Find Friends
+            </Link>
             <button
                 onClick={handleAddClick}
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition whitespace-nowrap"

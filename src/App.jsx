@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import HomePage from './pages/HomePage';
 import PastMoviesPage from './pages/PastMoviesPage';
 import ProfilePage from './pages/ProfilePage';
+import FindFriendsPage from './pages/FindFriendsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -36,6 +37,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/friends"
+          element={
+            <ProtectedRoute>
+              <FindFriendsPage />
             </ProtectedRoute>
           }
         />

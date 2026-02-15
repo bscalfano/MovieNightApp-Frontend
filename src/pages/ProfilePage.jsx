@@ -191,6 +191,14 @@ function ProfilePage() {
                 <p className="text-3xl font-bold text-green-600">{profile.upcomingMovieNights}</p>
                 </div>
                 <div>
+                <p className="text-sm text-gray-600">Followers</p>
+                <p className="text-3xl font-bold text-blue-600">{profile.followersCount}</p>
+                </div>
+                <div>
+                <p className="text-sm text-gray-600">Following</p>
+                <p className="text-3xl font-bold text-purple-600">{profile.followingCount}</p>
+                </div>
+                <div>
                 <p className="text-sm text-gray-600">Member Since</p>
                 <p className="text-sm font-semibold text-gray-900">
                     {new Date(profile.createdAt).toLocaleDateString('en-US', {
@@ -200,6 +208,15 @@ function ProfilePage() {
                 </p>
                 </div>
             </div>
+        </div>
+
+        <div className="mt-4 pt-4 border-t">
+            <Link
+                to="/friends"
+                className="text-indigo-600 hover:text-indigo-800 font-semibold"
+            >
+                Find Friends →
+            </Link>
         </div>
 
           {/* Profile Info / Edit */}
