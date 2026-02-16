@@ -31,8 +31,7 @@ function HomePage() {
       setFilteredMovieNights(movieNights);
     } else {
       const filtered = movieNights.filter(movie =>
-        movie.movieTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (movie.notes && movie.notes.toLowerCase().includes(searchTerm.toLowerCase()))
+        movie.movieTitle.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredMovieNights(filtered);
     }
