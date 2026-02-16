@@ -7,8 +7,6 @@ import ProfilePage from './pages/ProfilePage';
 import FindFriendsPage from './pages/FindFriendsPage';
 import PublicCalendarPage from './pages/PublicCalendarPage';
 import UserFriendsPage from './pages/UserFriendsPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import authService from './services/authService';
 import './App.css';
@@ -25,8 +23,6 @@ function App() {
           path="/" 
           element={isAuthenticated ? <Navigate to="/calendar" replace /> : <LandingPage />} 
         />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
 
         {/* Protected Routes */}
         <Route

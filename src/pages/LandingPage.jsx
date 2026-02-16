@@ -1,6 +1,29 @@
-import { Link } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import AuthDropdown from '../components/AuthDropdown';
 
 function LandingPage() {
+  const [showLoginDropdown, setShowLoginDropdown] = useState(false);
+  const [showRegisterDropdown, setShowRegisterDropdown] = useState(false);
+  const loginRef = useRef(null);
+  const registerRef = useRef(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (loginRef.current && !loginRef.current.contains(event.target)) {
+        setShowLoginDropdown(false);
+      }
+      if (registerRef.current && !registerRef.current.contains(event.target)) {
+        setShowRegisterDropdown(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#1a1d29]">
       <div className="max-w-6xl mx-auto px-4 py-8">
@@ -15,18 +38,39 @@ function LandingPage() {
             <h1 className="text-3xl font-bold text-white">Movie Night</h1>
           </div>
           <div className="flex gap-3">
-            <Link
-              to="/login"
-              className="bg-transparent border-2 border-[#40BCF4] text-[#40BCF4] px-6 py-3 rounded-lg hover:bg-[#40BCF4] hover:text-white transition font-semibold"
-            >
-              Log In
-            </Link>
-            <Link
-              to="/register"
-              className="bg-[#40BCF4] text-white px-6 py-3 rounded-lg hover:bg-[#35a5d9] transition font-semibold shadow-lg"
-            >
-              Sign Up
-            </Link>
+            {/* Login Dropdown */}
+            <div className="relative" ref={loginRef}>
+              <button
+                onClick={() => {
+                  setShowLoginDropdown(!showLoginDropdown);
+                  setShowRegisterDropdown(false);
+                }}
+                className="bg-transparent border-2 border-[#40BCF4] text-[#40BCF4] px-6 py-3 rounded-lg hover:bg-[#40BCF4] hover:text-white transition font-semibold"
+              >
+                Log In
+              </button>
+
+              {showLoginDropdown && (
+                <AuthDropdown type="login" />
+              )}
+            </div>
+
+            {/* Register Dropdown */}
+            <div className="relative" ref={registerRef}>
+              <button
+                onClick={() => {
+                  setShowRegisterDropdown(!showRegisterDropdown);
+                  setShowLoginDropdown(false);
+                }}
+                className="bg-[#40BCF4] text-white px-6 py-3 rounded-lg hover:bg-[#35a5d9] transition font-semibold shadow-lg"
+              >
+                Sign Up
+              </button>
+
+              {showRegisterDropdown && (
+                <AuthDropdown type="register" />
+              )}
+            </div>
           </div>
         </div>
 
@@ -38,12 +82,15 @@ function LandingPage() {
           <p className="text-2xl text-gray-300 mb-12 max-w-3xl mx-auto">
             Plan, schedule, and share movie nights with friends. Keep track of what you've watched and discover what's coming up.
           </p>
-          <Link
-            to="/register"
+          <button
+            onClick={() => {
+              setShowRegisterDropdown(true);
+              setShowLoginDropdown(false);
+            }}
             className="inline-block bg-[#40BCF4] text-white px-10 py-4 rounded-lg hover:bg-[#35a5d9] transition font-bold text-xl shadow-xl"
           >
             Get Started Free
-          </Link>
+          </button>
         </div>
 
         {/* Features */}
