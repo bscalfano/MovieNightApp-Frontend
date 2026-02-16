@@ -62,7 +62,7 @@ function LandingPage() {
                   setShowRegisterDropdown(!showRegisterDropdown);
                   setShowLoginDropdown(false);
                 }}
-                className="bg-[#40BCF4] text-white px-6 py-3 rounded-lg hover:bg-[#35a5d9] transition font-semibold shadow-lg"
+                className="bg-[#40BCF4] border-2 border-[#40BCF4] text-white px-6 py-3 rounded-lg hover:bg-[#35a5d9] hover:border-[#35a5d9] transition font-semibold shadow-lg"
               >
                 Sign Up
               </button>
