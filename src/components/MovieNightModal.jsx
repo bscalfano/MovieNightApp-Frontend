@@ -24,7 +24,6 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
     genre: ''
   });
 
-  // Reset form when modal opens/closes or initialData changes
   useEffect(() => {
     if (isOpen) {
       if (initialData) {
@@ -204,21 +203,21 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        className="fixed inset-0 bg-black bg-opacity-75 transition-opacity"
         onClick={onClose}
       ></div>
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="relative bg-[#252836] rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-700">
           {/* Header */}
-          <div className="bg-white border-b px-6 py-4 flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <div className="bg-[#2d3142] border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-white">
               {initialData ? 'Edit Movie Night' : 'Add Movie Night'}
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+              className="text-gray-400 hover:text-white text-2xl leading-none"
             >
               ×
             </button>
@@ -228,7 +227,7 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
           <div className="flex-1 overflow-y-auto">
             <form onSubmit={handleSubmit} className="flex">
               {/* Left Column - Form Fields */}
-              <div className="flex-1 p-6 border-r">
+              <div className="flex-1 p-6 border-r border-gray-700">
                 {/* Movie Title Search */}
                 <div className="mb-4">
                   <MovieSearch 
@@ -240,12 +239,12 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                     hasError={!!errors.movieTitle}
                   />
                   {errors.movieTitle && (
-                    <p className="text-red-500 text-sm mt-1">{errors.movieTitle}</p>
+                    <p className="text-red-400 text-sm mt-1">{errors.movieTitle}</p>
                   )}
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block text-gray-300 font-semibold mb-2">
                     Date *
                   </label>
                   <input
@@ -254,17 +253,17 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                     value={formData.scheduledDate}
                     onChange={handleChange}
                     min={today}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      errors.scheduledDate ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-3 py-2 bg-[#2d3142] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] text-white ${
+                      errors.scheduledDate ? 'border-red-500' : 'border-gray-600'
                     }`}
                   />
                   {errors.scheduledDate && (
-                    <p className="text-red-500 text-sm mt-1">{errors.scheduledDate}</p>
+                    <p className="text-red-400 text-sm mt-1">{errors.scheduledDate}</p>
                   )}
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block text-gray-300 font-semibold mb-2">
                     Start Time *
                   </label>
                   <input
@@ -272,17 +271,17 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                     name="startTime"
                     value={formData.startTime}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      errors.startTime ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-3 py-2 bg-[#2d3142] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] text-white ${
+                      errors.startTime ? 'border-red-500' : 'border-gray-600'
                     }`}
                   />
                   {errors.startTime && (
-                    <p className="text-red-500 text-sm mt-1">{errors.startTime}</p>
+                    <p className="text-red-400 text-sm mt-1">{errors.startTime}</p>
                   )}
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block text-gray-300 font-semibold mb-2">
                     Genre
                   </label>
                   <input
@@ -290,13 +289,13 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                     name="genre"
                     value={formData.genre}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                     placeholder="Action, Comedy, Drama, etc."
                   />
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-gray-700 font-semibold mb-2">
+                  <label className="block text-gray-300 font-semibold mb-2">
                     Notes
                   </label>
                   <textarea
@@ -304,20 +303,20 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                     value={formData.notes}
                     onChange={handleChange}
                     rows="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                     placeholder="Any notes about the movie night..."
                   />
                 </div>
 
                 {/* Attendees - Only show when editing */}
                 {initialData && attendees && attendees.length > 0 && (
-                  <div className="mb-4 pt-4 border-t">
-                    <label className="block text-gray-700 font-semibold mb-3">
+                  <div className="mb-4 pt-4 border-t border-gray-700">
+                    <label className="block text-gray-300 font-semibold mb-3">
                       Attendees ({attendees.length})
                     </label>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {attendees.map(attendee => (
-                        <div key={attendee.userId} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+                        <div key={attendee.userId} className="flex items-center gap-3 p-2 bg-[#2d3142] rounded-lg">
                           <ProfilePicture
                             src={attendee.profilePictureUrl}
                             alt={attendee.firstName && attendee.lastName 
@@ -326,7 +325,7 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                             size="sm"
                           />
                           <div>
-                            <p className="font-semibold text-gray-900 text-sm">
+                            <p className="font-semibold text-white text-sm">
                               {attendee.firstName && attendee.lastName
                                 ? `${attendee.firstName} ${attendee.lastName}`
                                 : attendee.email}
@@ -341,7 +340,7 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                 {/* Only show Image URL field for manual entries */}
                 {isManualEntry && (
                   <div className="mb-4">
-                    <label className="block text-gray-700 font-semibold mb-2">
+                    <label className="block text-gray-300 font-semibold mb-2">
                       Poster Image URL
                     </label>
                     <input
@@ -349,21 +348,21 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                       name="imageUrl"
                       value={formData.imageUrl}
                       onChange={handleChange}
-                      className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                        errors.imageUrl ? 'border-red-500' : 'border-gray-300'
+                      className={`w-full px-3 py-2 bg-[#2d3142] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] text-white placeholder-gray-500 ${
+                        errors.imageUrl ? 'border-red-500' : 'border-gray-600'
                       }`}
                       placeholder="https://example.com/movie-poster.jpg"
                     />
                     {errors.imageUrl && (
-                      <p className="text-red-500 text-sm mt-1">{errors.imageUrl}</p>
+                      <p className="text-red-400 text-sm mt-1">{errors.imageUrl}</p>
                     )}
                   </div>
                 )}
               </div>
 
               {/* Right Column - Poster Area */}
-              <div className="w-80 p-6 bg-gray-50 flex flex-col">
-                <label className="block text-gray-700 font-semibold mb-3">
+              <div className="w-80 p-6 bg-[#1a1d29] flex flex-col">
+                <label className="block text-gray-300 font-semibold mb-3">
                   Movie Poster
                 </label>
                 <div className="flex-1 flex items-start justify-center">
@@ -377,10 +376,10 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
                       }}
                     />
                   ) : (
-                    <div className="w-full aspect-[2/3] bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-300">
+                    <div className="w-full aspect-[2/3] bg-[#2d3142] rounded-lg flex items-center justify-center text-gray-500 border-2 border-dashed border-gray-600">
                       <div className="text-center p-4">
                         <svg 
-                          className="mx-auto h-12 w-12 text-gray-300 mb-2" 
+                          className="mx-auto h-12 w-12 text-gray-600 mb-2" 
                           fill="none" 
                           stroke="currentColor" 
                           viewBox="0 0 24 24"
@@ -402,7 +401,7 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
           </div>
 
           {/* Footer Buttons */}
-          <div className="bg-white border-t px-6 py-4 flex gap-3">
+          <div className="bg-[#2d3142] border-t border-gray-700 px-6 py-4 flex gap-3">
             {initialData && onDelete && (
               <button
                 type="button"
@@ -417,7 +416,7 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition font-semibold"
+              className="bg-[#363b4d] text-gray-300 py-2 px-4 rounded-lg hover:bg-[#3d4252] transition font-semibold"
               disabled={saving}
             >
               Cancel
@@ -425,7 +424,7 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
             <button
               type="submit"
               onClick={handleSubmit}
-              className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400"
+              className="bg-[#40BCF4] text-white py-2 px-4 rounded-lg hover:bg-[#35a5d9] transition font-semibold disabled:bg-[#35a5d9] disabled:opacity-50"
               disabled={saving}
             >
               {saving ? 'Saving...' : (initialData ? 'Update' : 'Create')}
@@ -434,18 +433,18 @@ function MovieNightModal({ isOpen, onClose, onSave, onDelete, initialData = null
 
           {/* Delete Confirmation Overlay */}
           {showDeleteConfirm && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center">
+              <div className="bg-[#252836] rounded-lg p-6 max-w-sm mx-4 border border-gray-700">
+                <h3 className="text-lg font-semibold text-white mb-2">
                   Delete Movie Night
                 </h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-gray-400 mb-4">
                   Are you sure you want to delete "{formData.movieTitle}"? This action cannot be undone.
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={handleDeleteCancel}
-                    className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition font-semibold"
+                    className="flex-1 bg-[#363b4d] text-gray-300 py-2 px-4 rounded-lg hover:bg-[#3d4252] transition font-semibold"
                   >
                     Cancel
                   </button>

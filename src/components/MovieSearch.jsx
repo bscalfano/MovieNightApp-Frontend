@@ -4,32 +4,20 @@ import tmdbService from '../services/tmdbService';
 function MovieSearch({ onMovieSelect, movieTitle, onMovieTitleChange, onBlur, showSearch, hasError }) {
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
-  const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
-    if (!showSearch) {
-      setShowResults(false);
-      return;
+    if (movieTitle.length >= 2 && showSearch) {
+      searchMovies();
+    } else {
+      setSearchResults([]);
     }
-
-    const delayDebounceFn = setTimeout(() => {
-      if (movieTitle.length >= 2) {
-        searchMovies();
-      } else {
-        setSearchResults([]);
-        setShowResults(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
   }, [movieTitle, showSearch]);
 
   const searchMovies = async () => {
     setSearching(true);
     try {
       const results = await tmdbService.searchMovies(movieTitle);
-      setSearchResults(results.slice(0, 5));
-      setShowResults(true);
+      setSearchResults(results);
       setSearching(false);
     } catch (error) {
       console.error('Error searching movies:', error);
@@ -37,99 +25,69 @@ function MovieSearch({ onMovieSelect, movieTitle, onMovieTitleChange, onBlur, sh
     }
   };
 
-  const handleSelectMovie = async (movie) => {
-    try {
-      const details = await tmdbService.getMovieDetails(movie.id);
-      
-      const genre = details.genres && details.genres.length > 0 
-        ? details.genres[0].name 
-        : null;
-      
-      onMovieSelect({
-        title: details.title,
-        posterUrl: tmdbService.getPosterUrl(details.poster_path),
-        overview: details.overview,
-        releaseYear: details.release_date ? new Date(details.release_date).getFullYear() : null,
-        genre: genre
-      });
-      
-      setShowResults(false);
-      setSearchResults([]);
-    } catch (error) {
-      console.error('Error selecting movie:', error);
-    }
-  };
-
-  const handleInputFocus = () => {
-    if (movieTitle.length >= 2 && searchResults.length > 0) {
-      setShowResults(true);
-    }
-  };
-
-  const handleBlur = (e) => {
-    // Delay to allow click events on results to fire first
-    setTimeout(() => {
-      setShowResults(false); // Hide the dropdown
-      if (onBlur) {
-        onBlur();
-      }
-    }, 200);
+  const handleSelectMovie = (movie) => {
+    onMovieSelect({
+      title: movie.title,
+      posterUrl: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '',
+      overview: movie.overview,
+      genre: movie.genre_names && movie.genre_names.length > 0 ? movie.genre_names[0] : ''
+    });
+    setSearchResults([]);
   };
 
   return (
     <div className="relative">
-      <label className="block text-gray-700 font-semibold mb-2">
+      <label className="block text-gray-300 font-semibold mb-2">
         Movie Title *
       </label>
-      <div className="relative">
-        <input
-          type="text"
-          value={movieTitle}
-          onChange={(e) => onMovieTitleChange(e.target.value)}
-          onFocus={handleInputFocus}
-          onBlur={handleBlur}
-          placeholder="Search for a movie or type manually..."
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-            hasError ? 'border-red-500' : 'border-gray-300'
-          }`}
-        />
-        
-        {searching && (
-          <div className="absolute right-3 top-3">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
-          </div>
-        )}
-      </div>
+      <input
+        type="text"
+        value={movieTitle}
+        onChange={(e) => onMovieTitleChange(e.target.value)}
+        onBlur={onBlur}
+        className={`w-full px-3 py-2 bg-[#2d3142] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] text-white placeholder-gray-500 ${
+          hasError ? 'border-red-500' : 'border-gray-600'
+        }`}
+        placeholder="Search for a movie..."
+      />
+      
+      {searching && (
+        <p className="text-sm text-gray-400 mt-1">Searching TMDB...</p>
+      )}
 
-      {showResults && searchResults.length > 0 && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto">
-          <div className="p-2 bg-gray-50 border-b text-xs text-gray-600 font-semibold">
-            Select from TMDB or continue typing manually
-          </div>
+      {searchResults.length > 0 && showSearch && (
+        <div className="absolute z-10 w-full mt-1 bg-[#252836] border border-gray-700 rounded-lg shadow-xl max-h-96 overflow-y-auto">
           {searchResults.map((movie) => (
             <button
               key={movie.id}
               type="button"
-              onMouseDown={(e) => e.preventDefault()} // Prevent blur from firing
               onClick={() => handleSelectMovie(movie)}
-              className="w-full text-left px-4 py-3 hover:bg-indigo-50 flex items-center gap-3 border-b last:border-b-0"
+              className="w-full text-left p-3 hover:bg-[#2d3142] transition flex gap-3 border-b border-gray-700 last:border-b-0"
             >
               {movie.poster_path ? (
                 <img
-                  src={tmdbService.getPosterUrl(movie.poster_path)}
+                  src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
                   alt={movie.title}
-                  className="w-12 h-16 object-cover rounded shadow-sm"
+                  className="w-12 h-18 object-cover rounded"
                 />
               ) : (
-                <div className="w-12 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">
-                  No Image
+                <div className="w-12 h-18 bg-[#2d3142] rounded flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
                 </div>
               )}
               <div className="flex-1">
-                <div className="font-semibold text-gray-900">{movie.title}</div>
-                <div className="text-sm text-gray-600">
+                <p className="font-semibold text-white">{movie.title}</p>
+                <p className="text-sm text-gray-400">
                   {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
-                </div>
+                  {movie.genre_names && movie.genre_names.length > 0 && (
+                    <span> • {movie.genre_names.slice(0, 2).join(', ')}</span>
+                  )}
+                </p>
+                {movie.overview && (
+                  <p className="text-xs text-gray-500 mt-1 line-clamp-2">{movie.overview}</p>
+                )}
               </div>
             </button>
           ))}

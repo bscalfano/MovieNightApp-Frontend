@@ -79,16 +79,16 @@ function PastMoviesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#1a1d29]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link to="/calendar" className="text-indigo-600 hover:text-indigo-800 mb-2 inline-block">
+          <Link to="/calendar" className="text-[#40BCF4] hover:text-[#35a5d9] mb-2 inline-block">
             ← Back to Calendar
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900">Past Movie Nights</h1>
+          <h1 className="text-4xl font-bold text-white">Past Movie Nights</h1>
           {user && (
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-400 mt-1">
               {user.firstName || user.email}'s viewing history
             </p>
           )}
@@ -96,8 +96,8 @@ function PastMoviesPage() {
 
         {/* Past Movies List */}
         {pastMovies.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg shadow-md">
-            <p className="text-xl text-gray-600 mb-4">No past movie nights yet.</p>
+          <div className="text-center py-12 bg-[#252836] rounded-lg border border-gray-700">
+            <p className="text-xl text-gray-400 mb-4">No past movie nights yet.</p>
             <p className="text-gray-500">Movie nights you've had will appear here.</p>
           </div>
         ) : (
@@ -106,7 +106,7 @@ function PastMoviesPage() {
               <div
                 key={movie.id}
                 onClick={() => handleEditClick(movie.id)}
-                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition cursor-pointer flex gap-6"
+                className="bg-[#252836] rounded-lg border border-gray-700 p-6 hover:border-[#40BCF4] transition cursor-pointer flex gap-6"
               >
                 {movie.imageUrl && (
                   <img
@@ -116,20 +116,20 @@ function PastMoviesPage() {
                   />
                 )}
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{movie.movieTitle}</h3>
+                  <h3 className="text-2xl font-bold text-white mb-2">{movie.movieTitle}</h3>
                   {movie.genre && (
-                    <span className="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded mb-2">
+                    <span className="inline-block bg-[#40BCF4] text-white text-xs px-2 py-1 rounded mb-2">
                       {movie.genre}
                     </span>
                   )}
-                  <p className="text-gray-600 mb-1">
+                  <p className="text-gray-400 mb-1">
                     📅 {format(new Date(movie.scheduledDate), 'EEEE, MMMM d, yyyy')}
                   </p>
-                  <p className="text-gray-600 mb-3">
+                  <p className="text-gray-400 mb-3">
                     🕐 {format12Hour(movie.startTime)}
                   </p>
                   {movie.notes && (
-                    <p className="text-gray-700 text-sm italic line-clamp-3">"{movie.notes}"</p>
+                    <p className="text-gray-300 text-sm italic line-clamp-3">"{movie.notes}"</p>
                   )}
                 </div>
               </div>

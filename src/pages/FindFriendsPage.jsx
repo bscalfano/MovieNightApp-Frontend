@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import friendsService from '../services/friendsService';
 import ProfilePicture from '../components/ProfilePicture';
@@ -21,6 +21,7 @@ function FindFriendsPage() {
   // Determine back link based on where user came from
   const backLink = location.state?.from || '/calendar';
   const backText = location.state?.from === '/profile' ? '← Back to Profile' : '← Back to Calendar';
+
   useEffect(() => {
     loadFriendData();
   }, []);
@@ -71,7 +72,6 @@ function FindFriendsPage() {
       await friendsService.sendFriendRequest(userId);
       toast.success('Friend request sent!');
       
-      // Update local state
       setSearchResults(prev => prev.map(user => 
         user.id === userId ? { ...user, friendshipStatus: 'pending_sent' } : user
       ));
@@ -86,7 +86,6 @@ function FindFriendsPage() {
       await friendsService.cancelFriendRequest(userId);
       toast.success('Friend request cancelled');
       
-      // Update local state
       setSearchResults(prev => prev.map(user => 
         user.id === userId ? { ...user, friendshipStatus: 'none' } : user
       ));
@@ -129,7 +128,6 @@ function FindFriendsPage() {
       setRemoveFriendDialog({ isOpen: false, userId: null, userName: '' });
       await loadFriendData();
       
-      // Update search results if present
       setSearchResults(prev => prev.map(user => 
         user.id === removeFriendDialog.userId ? { ...user, friendshipStatus: 'none' } : user
       ));
@@ -152,7 +150,7 @@ function FindFriendsPage() {
               user.id,
               user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email
             )}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold"
           >
             Remove Friend
           </button>
@@ -161,14 +159,14 @@ function FindFriendsPage() {
         return (
           <button
             onClick={() => handleCancelRequest(user.id)}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-semibold"
+            className="px-4 py-2 bg-[#2d3142] text-gray-300 rounded-lg hover:bg-[#363b4d] transition font-semibold border border-gray-700"
           >
             Cancel Request
           </button>
         );
       case 'pending_received':
         return (
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-400">
             (Sent you a request)
           </span>
         );
@@ -176,7 +174,7 @@ function FindFriendsPage() {
         return (
           <button
             onClick={() => handleSendRequest(user.id)}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-semibold"
+            className="px-4 py-2 bg-[#40BCF4] text-white rounded-lg hover:bg-[#35a5d9] transition font-semibold"
           >
             Add Friend
           </button>
@@ -185,47 +183,47 @@ function FindFriendsPage() {
   };
 
   const renderUserList = (users) => {
-  if (users.length === 0) {
+    if (users.length === 0) {
+      return (
+        <div className="text-center py-12 text-gray-400">
+          No users found
+        </div>
+      );
+    }
+
     return (
-      <div className="text-center py-12 text-gray-600">
-        No users found
+      <div className="space-y-3">
+        {users.map(user => (
+          <div key={user.id} className="flex items-center justify-between p-4 bg-[#252836] rounded-lg border border-gray-700 hover:border-[#40BCF4] transition">
+            <button
+              onClick={() => navigate(`/calendar/${user.id}`)}
+              className="flex items-center gap-3 flex-1 text-left"
+            >
+              <ProfilePicture
+                src={user.profilePictureUrl}
+                alt={user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email}
+                size="md"
+              />
+              <div>
+                <p className="font-semibold text-white">
+                  {user.firstName && user.lastName
+                    ? `${user.firstName} ${user.lastName}`
+                    : user.email}
+                </p>
+                <p className="text-sm text-gray-400">{user.email}</p>
+              </div>
+            </button>
+            {renderActionButton(user)}
+          </div>
+        ))}
       </div>
     );
-  }
-
-  return (
-    <div className="space-y-3">
-      {users.map(user => (
-        <div key={user.id} className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition">
-          <button
-            onClick={() => navigate(`/calendar/${user.id}`)}
-            className="flex items-center gap-3 flex-1 text-left"
-          >
-            <ProfilePicture
-              src={user.profilePictureUrl}
-              alt={user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email}
-              size="md"
-            />
-            <div>
-              <p className="font-semibold text-gray-900">
-                {user.firstName && user.lastName
-                  ? `${user.firstName} ${user.lastName}`
-                  : user.email}
-              </p>
-              <p className="text-sm text-gray-600">{user.email}</p>
-            </div>
-          </button>
-          {renderActionButton(user)}
-        </div>
-      ))}
-    </div>
-  );
-};
+  };
 
   const renderPendingRequests = () => {
     if (pendingRequests.length === 0) {
       return (
-        <div className="text-center py-12 text-gray-600">
+        <div className="text-center py-12 text-gray-400">
           No pending friend requests
         </div>
       );
@@ -234,7 +232,7 @@ function FindFriendsPage() {
     return (
       <div className="space-y-3">
         {pendingRequests.map(request => (
-          <div key={request.id} className="flex items-center justify-between p-4 bg-white rounded-lg border hover:shadow-md transition">
+          <div key={request.id} className="flex items-center justify-between p-4 bg-[#252836] rounded-lg border border-gray-700 hover:border-[#40BCF4] transition">
             <div className="flex items-center gap-3">
               <ProfilePicture
                 src={request.senderProfilePictureUrl}
@@ -244,12 +242,12 @@ function FindFriendsPage() {
                 size="md"
               />
               <div>
-                <p className="font-semibold text-gray-900">
+                <p className="font-semibold text-white">
                   {request.senderFirstName && request.senderLastName
                     ? `${request.senderFirstName} ${request.senderLastName}`
                     : request.senderEmail}
                 </p>
-                <p className="text-sm text-gray-600">{request.senderEmail}</p>
+                <p className="text-sm text-gray-400">{request.senderEmail}</p>
                 <p className="text-xs text-gray-500">
                   {new Date(request.createdAt).toLocaleDateString()}
                 </p>
@@ -264,7 +262,7 @@ function FindFriendsPage() {
               </button>
               <button
                 onClick={() => handleRejectRequest(request.id)}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold"
               >
                 Reject
               </button>
@@ -280,27 +278,27 @@ function FindFriendsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#1a1d29]">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate(backLink)}
-            className="text-indigo-600 hover:text-indigo-800 mb-2 inline-block"
+            className="text-[#40BCF4] hover:text-[#35a5d9] mb-2 inline-block"
           >
             {backText}
           </button>
-          <h1 className="text-4xl font-bold text-gray-900">Friends</h1>
+          <h1 className="text-4xl font-bold text-white">Friends</h1>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 border-b">
+        <div className="flex gap-2 mb-6 border-b border-gray-700">
           <button
             onClick={() => setActiveTab('search')}
             className={`px-4 py-2 font-semibold transition ${
               activeTab === 'search'
-                ? 'text-indigo-600 border-b-2 border-indigo-600'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'text-[#40BCF4] border-b-2 border-[#40BCF4]'
+                : 'text-gray-400 hover:text-gray-300'
             }`}
           >
             Search
@@ -309,8 +307,8 @@ function FindFriendsPage() {
             onClick={() => setActiveTab('friends')}
             className={`px-4 py-2 font-semibold transition ${
               activeTab === 'friends'
-                ? 'text-indigo-600 border-b-2 border-indigo-600'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'text-[#40BCF4] border-b-2 border-[#40BCF4]'
+                : 'text-gray-400 hover:text-gray-300'
             }`}
           >
             Friends ({friends.length})
@@ -319,8 +317,8 @@ function FindFriendsPage() {
             onClick={() => setActiveTab('requests')}
             className={`px-4 py-2 font-semibold transition relative ${
               activeTab === 'requests'
-                ? 'text-indigo-600 border-b-2 border-indigo-600'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'text-[#40BCF4] border-b-2 border-[#40BCF4]'
+                : 'text-gray-400 hover:text-gray-300'
             }`}
           >
             Requests ({pendingRequests.length})
@@ -342,16 +340,16 @@ function FindFriendsPage() {
                 placeholder="Search by name or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 bg-[#252836] border border-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
               />
               {searching && (
-                <p className="text-sm text-gray-600 mt-2">Searching...</p>
+                <p className="text-sm text-gray-400 mt-2">Searching...</p>
               )}
             </div>
 
             {/* Search Results */}
             {searchQuery.length < 2 ? (
-              <div className="text-center py-12 text-gray-600">
+              <div className="text-center py-12 text-gray-400">
                 Type at least 2 characters to search for users
               </div>
             ) : (

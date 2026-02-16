@@ -155,52 +155,52 @@ function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#1a1d29]">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <Link to="/calendar" className="text-indigo-600 hover:text-indigo-800 mb-2 inline-block">
+            <Link to="/calendar" className="text-[#40BCF4] hover:text-[#35a5d9] mb-2 inline-block">
               ← Back to Calendar
             </Link>
-            <h1 className="text-4xl font-bold text-gray-900">Profile Settings</h1>
+            <h1 className="text-4xl font-bold text-white">Profile Settings</h1>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-[#252836] rounded-lg shadow-lg p-6 border border-gray-700">
             <div className="flex flex-col items-center mb-6">
               <ProfilePicture
                 src={profile.profilePictureUrl}
                 alt={profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : profile.email}
                 size="lg"
               />
-              <h3 className="text-lg font-semibold text-gray-900 mt-4">
+              <h3 className="text-lg font-semibold text-white mt-4">
                 {profile.firstName && profile.lastName
                   ? `${profile.firstName} ${profile.lastName}`
                   : profile.email}
               </h3>
             </div>
-            <h4 className="text-md font-semibold text-gray-700 mb-4 border-t pt-4">Statistics</h4>
+            <h4 className="text-md font-semibold text-gray-300 mb-4 border-t border-gray-700 pt-4">Statistics</h4>
             <div className="space-y-3">
-              <Link to="/calendar" className="block p-3 rounded-lg hover:bg-indigo-50 transition cursor-pointer">
-                <p className="text-sm text-gray-600">Total Movie Nights</p>
-                <p className="text-3xl font-bold text-indigo-600">{profile.totalMovieNights}</p>
+              <Link to="/calendar" className="block p-3 rounded-lg hover:bg-[#2d3142] transition cursor-pointer">
+                <p className="text-sm text-gray-400">Total Movie Nights</p>
+                <p className="text-3xl font-bold text-[#40BCF4]">{profile.totalMovieNights}</p>
               </Link>
-              <Link to="/calendar" className="block p-3 rounded-lg hover:bg-green-50 transition cursor-pointer">
-                <p className="text-sm text-gray-600">Upcoming</p>
-                <p className="text-3xl font-bold text-green-600">{profile.upcomingMovieNights}</p>
+              <Link to="/calendar" className="block p-3 rounded-lg hover:bg-[#2d3142] transition cursor-pointer">
+                <p className="text-sm text-gray-400">Upcoming</p>
+                <p className="text-3xl font-bold text-green-500">{profile.upcomingMovieNights}</p>
               </Link>
-              <Link to="/friends" state={{ defaultTab: 'friends', from: '/profile' }} className="block p-3 rounded-lg hover:bg-blue-50 transition cursor-pointer">
-                <p className="text-sm text-gray-600">Friends</p>
-                <p className="text-3xl font-bold text-blue-600">{profile.friendsCount}</p>
+              <Link to="/friends" state={{ defaultTab: 'friends', from: '/profile' }} className="block p-3 rounded-lg hover:bg-[#2d3142] transition cursor-pointer">
+                <p className="text-sm text-gray-400">Friends</p>
+                <p className="text-3xl font-bold text-blue-500">{profile.friendsCount}</p>
               </Link>
-              <Link to="/friends" state={{ defaultTab: 'requests', from: '/profile' }} className="block p-3 rounded-lg hover:bg-orange-50 transition cursor-pointer">
-                <p className="text-sm text-gray-600">Pending Requests</p>
-                <p className="text-3xl font-bold text-orange-600">{profile.pendingRequestsCount}</p>
+              <Link to="/friends" state={{ defaultTab: 'requests', from: '/profile' }} className="block p-3 rounded-lg hover:bg-[#2d3142] transition cursor-pointer">
+                <p className="text-sm text-gray-400">Pending Requests</p>
+                <p className="text-3xl font-bold text-orange-500">{profile.pendingRequestsCount}</p>
               </Link>
               <div className="p-3">
-                <p className="text-sm text-gray-600">Member Since</p>
-                <p className="text-sm font-semibold text-gray-900">
+                <p className="text-sm text-gray-400">Member Since</p>
+                <p className="text-sm font-semibold text-white">
                   {new Date(profile.createdAt).toLocaleDateString('en-US', {
                     month: 'long',
                     year: 'numeric'
@@ -208,18 +208,18 @@ function ProfilePage() {
                 </p>
               </div>
             </div>
-            <div className="mt-4 pt-4 border-t">
-              <Link to="/friends" state={{ from: '/profile' }} className="text-indigo-600 hover:text-indigo-800 font-semibold">
+            <div className="mt-4 pt-4 border-t border-gray-700">
+              <Link to="/friends" state={{ from: '/profile' }} className="text-[#40BCF4] hover:text-[#35a5d9] font-semibold">
                 Find Friends →
               </Link>
             </div>
           </div>
 
-          <div className="md:col-span-2 bg-white rounded-lg shadow-md p-6">
+          <div className="md:col-span-2 bg-[#252836] rounded-lg shadow-lg p-6 border border-gray-700">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Profile Information</h3>
+              <h3 className="text-lg font-semibold text-white">Profile Information</h3>
               {!editMode && !passwordMode && (
-                <button onClick={() => setEditMode(true)} className="text-indigo-600 hover:text-indigo-800 font-semibold">
+                <button onClick={() => setEditMode(true)} className="text-[#40BCF4] hover:text-[#35a5d9] font-semibold">
                   Edit Profile
                 </button>
               )}
@@ -229,45 +229,45 @@ function ProfilePage() {
               <form onSubmit={handleProfileSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">First Name</label>
                     <input
                       type="text"
                       name="firstName"
                       value={profileForm.firstName}
                       onChange={handleProfileChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Last Name</label>
                     <input
                       type="text"
                       name="lastName"
                       value={profileForm.lastName}
                       onChange={handleProfileChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
                   <input
                     type="email"
                     name="email"
                     value={profileForm.email}
                     onChange={handleProfileChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Profile Picture URL</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Profile Picture URL</label>
                   <input
                     type="url"
                     name="profilePictureUrl"
                     value={profileForm.profilePictureUrl}
                     onChange={handleProfileChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                     placeholder="https://example.com/your-photo.jpg"
                   />
                   {profileForm.profilePictureUrl && (
@@ -277,25 +277,25 @@ function ProfilePage() {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Letterboxd Username</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Letterboxd Username</label>
                   <input
                     type="text"
                     name="letterboxdUsername"
                     value={profileForm.letterboxdUsername}
                     onChange={handleProfileChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                     placeholder="username"
                   />
                   {profileForm.letterboxdUsername && (
-                    <p className="text-sm text-gray-600 mt-1">
-                      Profile: <a href={`https://letterboxd.com/${profileForm.letterboxdUsername}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                    <p className="text-sm text-gray-400 mt-1">
+                      Profile: <a href={`https://letterboxd.com/${profileForm.letterboxdUsername}`} target="_blank" rel="noopener noreferrer" className="text-[#40BCF4] hover:underline">
                         letterboxd.com/{profileForm.letterboxdUsername}
                       </a>
                     </p>
                   )}
                 </div>
                 <div className="flex gap-3">
-                  <button type="submit" disabled={saving} className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400">
+                  <button type="submit" disabled={saving} className="flex-1 bg-[#40BCF4] text-white py-2 px-4 rounded-lg hover:bg-[#35a5d9] transition font-semibold disabled:opacity-50">
                     {saving ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button
@@ -311,7 +311,7 @@ function ProfilePage() {
                       });
                     }}
                     disabled={saving}
-                    className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition font-semibold"
+                    className="flex-1 bg-[#363b4d] text-gray-300 py-2 px-4 rounded-lg hover:bg-[#3d4252] transition font-semibold"
                   >
                     Cancel
                   </button>
@@ -322,40 +322,40 @@ function ProfilePage() {
             {passwordMode && (
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Current Password</label>
                   <input
                     type="password"
                     name="currentPassword"
                     value={passwordForm.currentPassword}
                     onChange={handlePasswordChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">New Password</label>
                   <input
                     type="password"
                     name="newPassword"
                     value={passwordForm.newPassword}
                     onChange={handlePasswordChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Confirm New Password</label>
                   <input
                     type="password"
                     name="confirmPassword"
                     value={passwordForm.confirmPassword}
                     onChange={handlePasswordChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2 bg-[#2d3142] border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#40BCF4] placeholder-gray-500"
                   />
                 </div>
                 <div className="flex gap-3">
-                  <button type="submit" disabled={saving} className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition font-semibold disabled:bg-indigo-400">
+                  <button type="submit" disabled={saving} className="flex-1 bg-[#40BCF4] text-white py-2 px-4 rounded-lg hover:bg-[#35a5d9] transition font-semibold disabled:opacity-50">
                     {saving ? 'Changing...' : 'Change Password'}
                   </button>
                   <button
@@ -369,7 +369,7 @@ function ProfilePage() {
                       });
                     }}
                     disabled={saving}
-                    className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition font-semibold"
+                    className="flex-1 bg-[#363b4d] text-gray-300 py-2 px-4 rounded-lg hover:bg-[#3d4252] transition font-semibold"
                   >
                     Cancel
                   </button>
@@ -380,27 +380,27 @@ function ProfilePage() {
             {!editMode && !passwordMode && (
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm text-gray-600">Name</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-sm text-gray-400">Name</p>
+                  <p className="text-lg font-semibold text-white">
                     {profile.firstName && profile.lastName
                       ? `${profile.firstName} ${profile.lastName}`
                       : profile.firstName || profile.lastName || 'Not set'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Email</p>
-                  <p className="text-lg font-semibold text-gray-900">{profile.email}</p>
+                  <p className="text-sm text-gray-400">Email</p>
+                  <p className="text-lg font-semibold text-white">{profile.email}</p>
                 </div>
                 {profile.letterboxdUsername && (
                   <div>
-                    <p className="text-sm text-gray-600">Letterboxd</p>
-                    <a href={`https://letterboxd.com/${profile.letterboxdUsername}`} target="_blank" rel="noopener noreferrer" className="text-lg font-semibold text-indigo-600 hover:text-indigo-800 hover:underline">
+                    <p className="text-sm text-gray-400">Letterboxd</p>
+                    <a href={`https://letterboxd.com/${profile.letterboxdUsername}`} target="_blank" rel="noopener noreferrer" className="text-lg font-semibold text-[#40BCF4] hover:text-[#35a5d9] hover:underline">
                       @{profile.letterboxdUsername}
                     </a>
                   </div>
                 )}
-                <div className="pt-4 border-t">
-                  <button onClick={() => setPasswordMode(true)} className="text-indigo-600 hover:text-indigo-800 font-semibold">
+                <div className="pt-4 border-t border-gray-700">
+                  <button onClick={() => setPasswordMode(true)} className="text-[#40BCF4] hover:text-[#35a5d9] font-semibold">
                     Change Password
                   </button>
                 </div>
@@ -409,9 +409,9 @@ function ProfilePage() {
           </div>
         </div>
 
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6 border-2 border-red-200">
-          <h3 className="text-lg font-semibold text-red-600 mb-4">Danger Zone</h3>
-          <p className="text-sm text-gray-600 mb-4">
+        <div className="mt-8 bg-[#252836] rounded-lg shadow-lg p-6 border-2 border-red-900">
+          <h3 className="text-lg font-semibold text-red-500 mb-4">Danger Zone</h3>
+          <p className="text-sm text-gray-400 mb-4">
             Once you delete your account, there is no going back. All your movie nights will be permanently deleted.
           </p>
           <button onClick={() => setDeleteDialog(true)} className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition font-semibold">

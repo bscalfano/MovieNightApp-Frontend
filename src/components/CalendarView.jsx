@@ -44,21 +44,21 @@ function CalendarView({ movieNights, onEdit, onDateClick }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-[#252836] rounded-lg shadow-lg p-6 border border-gray-700">
       {/* Calendar Header */}
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={previousMonth}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition"
+          className="px-4 py-2 bg-[#2d3142] text-gray-300 rounded hover:bg-[#363b4d] transition border border-gray-700"
         >
           ← Previous
         </button>
-        <h2 className="text-2xl font-bold">
+        <h2 className="text-2xl font-bold text-white">
           {format(currentDate, 'MMMM yyyy')}
         </h2>
         <button
           onClick={nextMonth}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition"
+          className="px-4 py-2 bg-[#2d3142] text-gray-300 rounded hover:bg-[#363b4d] transition border border-gray-700"
         >
           Next →
         </button>
@@ -67,7 +67,7 @@ function CalendarView({ movieNights, onEdit, onDateClick }) {
       {/* Day Headers */}
       <div className="grid grid-cols-7 gap-2 mb-2">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="text-center font-semibold text-gray-600 py-2">
+          <div key={day} className="text-center font-semibold text-gray-400 py-2">
             {day}
           </div>
         ))}
@@ -86,12 +86,14 @@ function CalendarView({ movieNights, onEdit, onDateClick }) {
               key={day.toISOString()}
               onClick={(e) => handleDayClick(day, e)}
               className={`min-h-24 border-2 rounded-lg p-2 transition ${
-                !isCurrentMonth ? 'bg-gray-50 text-gray-400 border-gray-200' : 'bg-white border-gray-300'
-              } ${isToday ? 'ring-2 ring-indigo-500' : ''} ${
-                isPast ? 'opacity-60' : 'cursor-pointer hover:border-indigo-500'
+                !isCurrentMonth 
+                  ? 'bg-[#1a1d29] text-gray-600 border-gray-800' 
+                  : 'bg-[#2d3142] border-gray-700'
+              } ${isToday ? 'ring-2 ring-[#40BCF4]' : ''} ${
+                isPast ? 'opacity-60' : 'cursor-pointer hover:border-[#40BCF4]'
               }`}
             >
-              <div className="font-semibold text-sm mb-1">
+              <div className="font-semibold text-sm mb-1 text-gray-300">
                 {format(day, 'd')}
               </div>
               {moviesOnDay.map(movie => (
@@ -101,11 +103,11 @@ function CalendarView({ movieNights, onEdit, onDateClick }) {
                     e.stopPropagation();
                     onEdit(movie.id);
                   }}
-                  className="movie-card-button w-full bg-indigo-100 text-indigo-800 text-xs p-1 rounded mb-1 hover:bg-indigo-200 transition text-left"
+                  className="movie-card-button w-full bg-[#40BCF4] text-white text-xs p-1 rounded mb-1 hover:bg-[#35a5d9] transition text-left"
                   title={`Click to edit: ${movie.movieTitle}`}
                 >
                   <div className="font-semibold truncate">{movie.movieTitle}</div>
-                  <div className="text-xs">{format12Hour(movie.startTime)}</div>
+                  <div className="text-xs opacity-90">{format12Hour(movie.startTime)}</div>
                 </button>
               ))}
             </div>
